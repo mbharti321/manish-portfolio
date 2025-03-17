@@ -1,0 +1,39 @@
+#work-experience {
+    padding: 2rem;
+    background-color: #f0f0f0;
+}
+
+#work-experience h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.experience {
+    background-color: #fff;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.experience h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.experience ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.experience li {
+    margin-bottom: 0.25rem;
+}
+
+.experience p {
+    margin-bottom: 0.5rem;
+}
+
+.experience strong {
+    font-weight: bold;
+}

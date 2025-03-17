@@ -1,0 +1,22 @@
+#about {
+    padding: 2rem;
+    background-color: #f0f0f0;
+    scroll-margin-top: 5rem;
+    /* Adjust to match your header height */
+}
+
+#skills {
+    scroll-margin-top: 5rem;
+}
+
+#projects {
+    scroll-margin-top: 5rem;
+}
+
+#work-experience {
+    scroll-margin-top: 5rem;
+}
+
+#contact {
+    scroll-margin-top: 5rem;
+}
