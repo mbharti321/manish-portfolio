@@ -39,23 +39,23 @@ const experiences = [
   },
   {
     title: "Software Engineer Intern",
+    company: "Telaverge Communications",
+    duration: "May-22 Aug 2022 | Bengaluru",
+    details: [
+      "Developed the company’s official website from scratch to launch, contributing to 50% of the project's implementation.",
+    ],
+    techStack: "JavaScript, Node.js, REST API, WordPress, CSS, React.js, HTML5",
+  },
+  {
+    title: "Software Engineer Intern",
     company: "SysCloud (SaaS Data Protection Platform, Chennai)",
-    duration: "Dec 2021 – Aug 2022",
+    duration: "Dec 2021 – May 2022 | Bengaluru",
     details: [
       "Created Node.js scripts to generate test data automatically, saving 100+ hours of manual work per month.",
       "Developed automated testing scripts using Cypress, improving test coverage by 15%.",
       "Collaborated with senior engineers to debug and troubleshoot issues, ensuring smooth product functionality.",
     ],
     techStack: "Node.js, Cypress, Automation",
-  },
-  {
-    title: "Software Engineer Intern",
-    company: "Telaverge Communications, Bengaluru",
-    duration: "",
-    details: [
-      "Developed the company’s official website from scratch to launch, contributing to 50% of the project's implementation.",
-    ],
-    techStack: "JavaScript, Node.js, REST API, WordPress, CSS, React.js, HTML5",
   },
 ];
 
@@ -70,22 +70,24 @@ function WorkExperience() {
             </Typography>
             <Grid container spacing={3}>
               {experiences.map((experience, index) => (
-                <Grid item xs={12} key={index}>
+                <Grid item xs={12} key={index} style={{ display:"flex", alignItems:"stretch" }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h5" gutterBottom>
                         {experience.title}
                       </Typography>
-                      <Typography variant="subtitle1" color="textSecondary">
-                        {experience.company}
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {experience.duration}
-                      </Typography>
+                      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                        <Typography variant="subtitle1" color="textSecondary">
+                          {experience.company}
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          color="textSecondary"
+                          gutterBottom
+                        >
+                          {experience.duration}
+                        </Typography>
+                      </div>
                       <Box component="ul" sx={{ pl: 2 }}>
                         {experience.details.map((detail, idx) => (
                           <li key={idx}>

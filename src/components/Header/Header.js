@@ -28,9 +28,9 @@ function Header() {
           </Typography>
           <Button color="inherit" onClick={() => handleScroll('#about')}>About</Button>
           <Button color="inherit" onClick={() => handleScroll('#skills')}>Skills</Button>
+          <Button color="inherit" onClick={() => handleScroll('#work-experience')}>Work-Experience</Button>
           <Button color="inherit" onClick={() => handleScroll('#projects')}>Projects</Button>
           <Button color="inherit" onClick={() => handleScroll('#contact')}>Contact</Button>
-          <Button color="inherit" onClick={() => handleScroll('#work-experience')}>Work-Experience</Button>
         </Toolbar>
       </Container>
     </AppBar>
