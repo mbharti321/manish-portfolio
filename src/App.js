@@ -14,16 +14,16 @@ function App() {
     <>
       <Header />
       <Box className="about-section">
-        <Container maxWidth="md">
+        {/* <Container maxWidth="md">
           <Box className="about-box">
-            <About />
           </Box>
-        </Container>
+        </Container> */}
+            <About />
       </Box>
       <Container className="main-section">
         <Skills />
         <WorkExperience />
-        <Projects />
+        {/* <Projects /> */}
         <Contact />
       </Container>
       <Footer />
