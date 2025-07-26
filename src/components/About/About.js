@@ -9,7 +9,7 @@ function About() {
         <Box className="about-main-row">
           <Box className="about-avatar-box">
             <Avatar
-              src={process.env.PUBLIC_URL + "images/manish-profile.png"}
+              src={process.env.PUBLIC_URL + "/images/manish-profile.png"}
               alt="Manish Bharti"
               className="about-avatar"
             />

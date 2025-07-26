@@ -36,7 +36,7 @@ function Header() {
       <Container maxWidth="lg">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            Manish Portfolio
+            Manish Bharti
           </Typography>
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
             {navLinks.map(link => (
