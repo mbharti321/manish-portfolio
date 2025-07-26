@@ -9,14 +9,15 @@ function Footer() {
     <footer>
       <Box
         sx={{
-          backgroundColor: "#f5f5f5",
-          padding: "1rem 0",
+          backgroundColor: "#1976d2",
+          color: "#fff",
+          padding: { xs: "1rem 0", md: "1.5rem 0" },
           textAlign: "center",
-          borderTop: "1px solid #ddd",
+          borderTop: "1px solid #eee",
         }}
       >
-        <Container>
-          <Typography variant="body1" gutterBottom>
+        <Container maxWidth="lg">
+          <Typography variant="body2" gutterBottom sx={{ fontWeight: 500 }}>
             &copy; {new Date().getFullYear()} Manish Bharti. All rights reserved.
           </Typography>
           <Box>
@@ -26,6 +27,7 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
+              sx={{ color: "#fff" }}
             >
               <LinkedInIcon />
             </IconButton>
@@ -35,6 +37,7 @@ function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
+              sx={{ color: "#fff" }}
             >
               <GitHubIcon />
             </IconButton>
@@ -42,6 +45,7 @@ function Footer() {
               component={Link}
               href="mailto:manishbharti.work@gmail.com"
               aria-label="Email"
+              sx={{ color: "#fff" }}
             >
               <EmailIcon />
             </IconButton>

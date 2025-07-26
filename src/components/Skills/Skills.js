@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, Container, Typography, Grid, Box } from "@mui/material";
+import "./Skills.css";
 
 const skills = {
   "Backend Development": [
@@ -38,35 +39,34 @@ const skills = {
     "GitHub",
     "AWS Foundations",
   ],
-  
 };
 
 function Skills() {
   return (
     <section id="skills">
-      <Container style={{ marginTop: "2rem" }}>
-      <Card>
-                <CardContent>
-        <Typography variant="h4" gutterBottom >
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: "#1976d2" }}>
           Skills
         </Typography>
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
           {Object.entries(skills).map(([category, skillList], index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  height: "100%", // Ensures all cards have the same height
+                  height: "100%",
+                  borderRadius: 3,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
                 }}
               >
                 <CardContent>
-                  <Typography gutterBottom style={{ fontWeight: 600 }}>
+                  <Typography gutterBottom sx={{ fontWeight: 600, fontSize: "1.2rem", color: "#1976d2" }}>
                     {category}
                   </Typography>
-                  <Box component="ul" sx={{ paddingLeft: 2 }}>
+                  <Box component="ul" sx={{ pl: 2, mb: 0 }}>
                     {skillList.map((skill, idx) => (
-                      <li key={idx}>
+                      <li key={idx} style={{ marginBottom: "0.25rem", color: "#333" }}>
                         <Typography variant="body1">{skill}</Typography>
                       </li>
                     ))}
@@ -76,8 +76,6 @@ function Skills() {
             </Grid>
           ))}
         </Grid>
-        </CardContent>
-      </Card>
       </Container>
     </section>
   );

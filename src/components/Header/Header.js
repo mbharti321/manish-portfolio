@@ -1,8 +1,12 @@
-import React from "react";
-import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import React, { useState } from "react";
+import { AppBar, Toolbar, Typography, Button, Container, IconButton, Drawer, List, ListItem, ListItemText, Box } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const handleScroll = (id) => {
+    setMobileOpen(false);
     const element = document.getElementById(id.substring(1));
     if (element) {
       // Get the header height to use as offset
@@ -19,20 +23,48 @@ function Header() {
     }
   };
   
+  const navLinks = [
+    { label: "About", id: "#about" },
+    { label: "Skills", id: "#skills" },
+    { label: "Work Experience", id: "#work-experience" },
+    { label: "Projects", id: "#projects" },
+    { label: "Contact", id: "#contact" },
+  ];
+
   return (
-    <AppBar position="sticky" color="primary" component="header">
-      <Container>
+    <AppBar position="sticky" color="primary" component="header" elevation={2}>
+      <Container maxWidth="lg">
         <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
             Manish Portfolio
           </Typography>
-          <Button color="inherit" onClick={() => handleScroll('#about')}>About</Button>
-          <Button color="inherit" onClick={() => handleScroll('#skills')}>Skills</Button>
-          <Button color="inherit" onClick={() => handleScroll('#work-experience')}>Work-Experience</Button>
-          <Button color="inherit" onClick={() => handleScroll('#projects')}>Projects</Button>
-          <Button color="inherit" onClick={() => handleScroll('#contact')}>Contact</Button>
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
+            {navLinks.map(link => (
+              <Button key={link.id} color="inherit" onClick={() => handleScroll(link.id)}>
+                {link.label}
+              </Button>
+            ))}
+          </Box>
+          <IconButton
+            color="inherit"
+            edge="end"
+            sx={{ display: { md: "none" } }}
+            onClick={() => setMobileOpen(true)}
+            aria-label="menu"
+          >
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </Container>
+      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        <List sx={{ minWidth: 180 }}>
+          {navLinks.map(link => (
+            <ListItem button key={link.id} onClick={() => handleScroll(link.id)}>
+              <ListItemText primary={link.label} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
     </AppBar>
   );
 }

@@ -7,6 +7,7 @@ import {
   CardContent,
   Box,
 } from "@mui/material";
+import "./WorkExperience.css";
 
 const experiences = [
   {
@@ -62,53 +63,75 @@ const experiences = [
 function WorkExperience() {
   return (
     <section id="work-experience">
-      <Container style={{ marginTop: "2rem" }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h4" gutterBottom>
-              Work Experience
-            </Typography>
-            <Grid container spacing={3}>
-              {experiences.map((experience, index) => (
-                <Grid item xs={12} key={index} style={{ display:"flex", alignItems:"stretch" }}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5" gutterBottom>
-                        {experience.title}
-                      </Typography>
-                      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          {experience.company}
-                        </Typography>
-                        <Typography
-                          variant="subtitle2"
-                          color="textSecondary"
-                          gutterBottom
-                        >
-                          {experience.duration}
-                        </Typography>
-                      </div>
-                      <Box component="ul" sx={{ pl: 2 }}>
-                        {experience.details.map((detail, idx) => (
-                          <li key={idx}>
-                            <Typography variant="body1">{detail}</Typography>
-                          </li>
-                        ))}
-                      </Box>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        sx={{ mt: 2 }}
-                      >
-                        <strong>Tech Stack:</strong> {experience.techStack}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ fontWeight: 700, color: "#1976d2" }}
+        >
+          Work Experience
+        </Typography>
+        <Grid container spacing={3}>
+          {experiences.map((experience, index) => (
+            <Grid
+              item
+              xs={12}
+              key={index}
+              style={{ display: "flex", alignItems: "stretch", width: "100%" }}
+            >
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+                  width: "100%",
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ fontWeight: 600, color: "#1976d2" }}
+                  >
+                    {experience.title}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      mb: 1,
+                    }}
+                  >
+                    <Typography variant="subtitle1" color="textSecondary">
+                      {experience.company}
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      {experience.duration}
+                    </Typography>
+                  </Box>
+                  <Box component="ul" sx={{ pl: 2 }}>
+                    {experience.details.map((detail, idx) => (
+                      <li key={idx}>
+                        <Typography variant="body2">{detail}</Typography>
+                      </li>
+                    ))}
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ mt: 2 }}
+                  >
+                    <strong>Tech Stack:</strong> {experience.techStack}
+                  </Typography>
+                </CardContent>
+              </Card>
             </Grid>
-          </CardContent>
-        </Card>
+          ))}
+        </Grid>
       </Container>
     </section>
   );

@@ -1,5 +1,13 @@
 #contact {
-    padding: 2rem;
+    background: #f7f8fa;
+    border-radius: 16px;
+    margin: 1rem 0;
+}
+
+@media (max-width: 600px) {
+    #contact {
+        padding: 1rem 0;
+    }
 }
 
 #contact h2 {
@@ -25,4 +33,10 @@
 
 #contact a:hover {
     text-decoration: underline;
+}
+
+.udc-contact-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 2rem !important;
 }
