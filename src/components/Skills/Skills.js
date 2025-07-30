@@ -44,29 +44,21 @@ const skills = {
 function Skills() {
   return (
     <section id="skills">
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: "#1976d2" }}>
+      <Container maxWidth="lg">
+        <Typography variant="h4" gutterBottom className="skills-title">
           Skills
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className="skills-grid">
           {Object.entries(skills).map(([category, skillList], index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  borderRadius: 3,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-                }}
-              >
+            <Grid item xs={12} sm={6} md={4} key={index} className="skills-grid-item">
+              <Card className="skill-category">
                 <CardContent>
-                  <Typography gutterBottom sx={{ fontWeight: 600, fontSize: "1.2rem", color: "#1976d2" }}>
+                  <Typography gutterBottom className="skill-category-title">
                     {category}
                   </Typography>
-                  <Box component="ul" sx={{ pl: 2, mb: 0 }}>
+                  <Box component="ul" className="skill-list">
                     {skillList.map((skill, idx) => (
-                      <li key={idx} style={{ marginBottom: "0.25rem", color: "#333" }}>
+                      <li key={idx} className="skill-list-item">
                         <Typography variant="body1">{skill}</Typography>
                       </li>
                     ))}

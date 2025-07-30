@@ -5,7 +5,6 @@ import {
   TextField,
   Button,
   Box,
-  Grid,
   Link,
   Card,
   CardContent,
@@ -18,79 +17,70 @@ import "./Contact.css";
 function Contact() {
   return (
     <section id="contact">
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ fontWeight: 700, color: "#1976d2" }}
-        >
+      <Container maxWidth="lg">
+        <Typography variant="h4" gutterBottom className="contact-title">
           Contact Me
         </Typography>
-        <Typography variant="h6" gutterBottom sx={{ color: "#1976d2" }}>
-          Get in Touch
+        <Typography variant="h6" gutterBottom className="contact-subtitle">
+          Let's Build, Connect & Innovate Together!
         </Typography>
         <Typography variant="body1" gutterBottom>
           Feel free to reach out to me via email or connect with me on LinkedIn
           or GitHub.
         </Typography>
-        <Grid container spacing={3} className="udc-contact-grid">
-          <Grid item xs={12} md={5}>
-            <Card
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              }}
-            >
+        {/* Contact info & form */}
+        <Box className="contact-row">
+          {/* contact info */}
+          <Box className="contact-info-col">
+            <Card className="contact-card">
               <CardContent>
-                <Box sx={{ mt: 2 }}>
-                  <Typography
-                    variant="body1"
-                    display="flex"
-                    alignItems="center"
-                    gutterBottom
-                  >
-                    <EmailIcon sx={{ mr: 1 }} />
-                    <strong>Email:</strong>
+                {/* <Box className="contact-info-image-box">
+                  <img
+                    src="https://undraw.co/api/illustrations/undraw_mailbox_re_dvds.svg"
+                    alt="Contact Illustration"
+                    className="contact-info-image"
+                  />
+                </Box> */}
+                <Box className="contact-info-list">
+                  <Typography variant="body1" className="contact-info-item">
+                    <div className="contact-info-label">
+                      <EmailIcon className="contact-info-icon" />
+                      <strong>Email:</strong>
+                    </div>
                     <Link
                       href="mailto:manishbharti.work@gmail.com"
                       underline="hover"
-                      sx={{ ml: 1 }}
+                      className="contact-info-link"
                     >
                       manishbharti.work@gmail.com
                     </Link>
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    display="flex"
-                    alignItems="center"
-                    gutterBottom
-                  >
-                    <LinkedInIcon sx={{ mr: 1 }} />
-                    <strong>LinkedIn:</strong>
+                  <Typography variant="body1" className="contact-info-item">
+                    <div className="contact-info-label">
+                      <LinkedInIcon className="contact-info-icon" />
+                      <strong>LinkedIn:</strong>
+                    </div>
                     <Link
                       href="https://linkedin.com/in/manish-bharti"
                       target="_blank"
                       rel="noopener noreferrer"
                       underline="hover"
-                      sx={{ ml: 1 }}
+                      className="contact-info-link"
                     >
                       linkedin.com/in/manish-bharti
                     </Link>
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    display="flex"
-                    alignItems="center"
-                    gutterBottom
-                  >
-                    <GitHubIcon sx={{ mr: 1 }} />
-                    <strong>GitHub:</strong>
+                  <Typography variant="body1" className="contact-info-item">
+                    <div className="contact-info-label">
+                      <GitHubIcon className="contact-info-icon" />
+                      <strong>GitHub:</strong>
+                    </div>
                     <Link
                       href="https://github.com/mbharti321"
                       target="_blank"
                       rel="noopener noreferrer"
                       underline="hover"
-                      sx={{ ml: 1 }}
+                      className="contact-info-link"
                     >
                       github.com/mbharti321
                     </Link>
@@ -98,16 +88,16 @@ function Contact() {
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Card
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              }}
-            >
+          </Box>
+          {/* contact form */}
+          <Box className="contact-form-col">
+            <Card className="contact-card">
               <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ color: "#1976d2" }}>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  className="contact-form-title"
+                >
                   Send a Message
                 </Typography>
                 <Box component="form" noValidate autoComplete="off">
@@ -131,14 +121,18 @@ function Contact() {
                     multiline
                     rows={3}
                   />
-                  <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="contact-send-btn"
+                  >
                     Send
                   </Button>
                 </Box>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Container>
     </section>
   );

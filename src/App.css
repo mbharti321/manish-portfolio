@@ -48,7 +48,7 @@ main {
 
 @media (max-width: 600px) {
   .about-section {
-    padding: 1rem 0;
+    /* padding: 1rem 0; */
   }
   .about-box, .main-section {
     padding: 8px;

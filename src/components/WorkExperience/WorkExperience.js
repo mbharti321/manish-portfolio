@@ -63,11 +63,11 @@ const experiences = [
 function WorkExperience() {
   return (
     <section id="work-experience">
-      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="lg">
         <Typography
           variant="h4"
           gutterBottom
-          sx={{ fontWeight: 700, color: "#1976d2" }}
+          className="workexp-title"
         >
           Work Experience
         </Typography>
@@ -77,31 +77,18 @@ function WorkExperience() {
               item
               xs={12}
               key={index}
-              style={{ display: "flex", alignItems: "stretch", width: "100%" }}
+              className="workexp-grid-item"
             >
-              <Card
-                sx={{
-                  borderRadius: 3,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-                  width: "100%",
-                }}
-              >
+              <Card className="workexp-card">
                 <CardContent>
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ fontWeight: 600, color: "#1976d2" }}
+                    className="workexp-role"
                   >
                     {experience.title}
                   </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      mb: 1,
-                    }}
-                  >
+                  <Box className="workexp-row">
                     <Typography variant="subtitle1" color="textSecondary">
                       {experience.company}
                     </Typography>
@@ -113,7 +100,7 @@ function WorkExperience() {
                       {experience.duration}
                     </Typography>
                   </Box>
-                  <Box component="ul" sx={{ pl: 2 }}>
+                  <Box component="ul" className="workexp-list">
                     {experience.details.map((detail, idx) => (
                       <li key={idx}>
                         <Typography variant="body2">{detail}</Typography>
@@ -123,7 +110,7 @@ function WorkExperience() {
                   <Typography
                     variant="body2"
                     color="textSecondary"
-                    sx={{ mt: 2 }}
+                    className="workexp-tech"
                   >
                     <strong>Tech Stack:</strong> {experience.techStack}
                   </Typography>
@@ -136,5 +123,6 @@ function WorkExperience() {
     </section>
   );
 }
+
 
 export default WorkExperience;

@@ -164,6 +164,16 @@
 
 
 /* Responsive adjustments */
+@media (max-width: 800px) {
+
+    .about-header {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    .about-avatar-container {
+        margin-bottom: 0;
+    }
+}
 @media (max-width: 600px) {
     .about-card {
         padding: 2rem 1.5rem;
@@ -171,13 +181,13 @@
     }
     
     .about-avatar-background {
-        width: 120px;
-        height: 120px;
+        width: 125px;
+        height: 125px;
     }
     
     .about-avatar {
-        width: 104px !important;
-        height: 104px !important;
+        width: 123px !important;
+        height: 123px !important;
     }
     
     .about-name {
