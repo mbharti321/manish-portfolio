@@ -3,6 +3,9 @@
     border-radius: 16px;
     margin: 1rem 0;
 }
+.projects-grid{
+    flex-direction: column !important;
+}
 
 #projects h2 {
     font-size: 2rem;

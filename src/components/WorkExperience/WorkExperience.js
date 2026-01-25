@@ -11,46 +11,46 @@ import "./WorkExperience.css";
 
 const experiences = [
   {
-    title: "Software Engineer",
-    company: "Corestrat (Working for ACI Logistix, a logistics company)",
-    duration: "Sep 2022 – Present | Bengaluru",
+    title: "Sr. Software Engineer",
+    company: "Corestrat (Working for ACI Logistix, a logistics firm)",
+    duration: "Sep 2025 – Present | Bengaluru",
     details: [
-      "Built a robust CI/CD workflow for SQL DB objects, streamlining production deployments with 100% version control.",
-      "Implemented SSFPriority for postage calculation, increasing profit margin by 10%.",
-      "Designed and implemented BST 2.0, eliminating manual tracking errors and enhancing real-time package status updates.",
-      "Developed a webhook and event service for real-time package event flow between couriers and service providers.",
-      "Automated Cainiao Ticket Processing, resulting in a 100% reduction in manual task completion time.",
-      "Implemented authentication and logging for APIs and migrated applications to manage identity, improving security and debugging.",
-      "Developed and deployed 4 internal projects using Python and Flask for REST API creation.",
+      "Designed and deployed InfoBridge AI, a RAG-based chatbot for enterprise knowledge management using LLMs (GPT-4o), significantly reducing information lookup time.",
+      "Built an in-house Non-Conveyable Scan facility (UI, APIs, integrations), replacing a third-party tool, saving ~10% in revenue and improving data visibility.",
+      "Fixed duplicate order failures for 5+ carriers, clearing 1,000+ packages from the daily DLQs and stabilizing downstream workflows.",
     ],
     techStack:
-      "Python, Flask, SQL, .NET, C#, Azure Function Apps, Event Hub, Service Bus Queue, Stored Procedures, Virtual Machines, Azure DevOps, CI/CD",
+      "Python, FastAPI, GPT-4o, RAG, Azure AI Search, Vector Databases, .NET, C#, Azure Function Apps, Application Insights, Azure DevOps, CI/CD",
   },
   {
-    title: "Data Engineer",
-    company: "Corestrat (Working for ACI Logistix, a logistics company)",
-    duration: "Apr 2023 – Sep 2023 | Bengaluru",
+    title: "Software Engineer",
+    company: "Corestrat (Working for ACI Logistix, a logistics firm)",
+    duration: "Sep 2022 – Aug 2025 | Bengaluru",
     details: [
-      "Built data pipelines, automating archive data retrieval, improving efficiency by 90%, and reducing manual intervention.",
-      "Achieved 40% cost reduction by converting archived Azure blob files to data lake parquet files.",
-      "Developed Power BI dashboards, reducing manual data lookup time by ~40% and improving decision-making.",
+      "Built a robust CI/CD workflow for SQL DB objects, ensuring full version control and reliable production deployments.",
+      "Designed and owned production-grade REST APIs for carrier overage webhooks, automating package handling and order creation, reducing manual intervention.",
+      "Ensured 100% uptime for facility operations via proactive Raspberry Pi (RPi) log monitoring.",
+      "Implemented USPS parcel postage optimization logic (SSF Priority), contributing to a ~10% improvement in profit margin on 5000+ daily parcels.",
+      "Developed a webhook and event service for real-time package event flow between couriers and service providers.",
+      "Designed and implemented a real-time package tracking system (BST 2.0), eliminating manual tracking errors and providing instant status updates.",
+      "Automated Cainiao ticket processing, eliminating manual effort and reducing task completion time by 100%.",
     ],
     techStack:
-      "Python, Azure Synapse, Pipelines, Apache Spark, Selenium, Stored Procedures, Automation",
+      "Python, FastAPI, SQL, .NET, C#, REST APIs, Azure Function Apps, Event Hub, Service Bus Queue, Stored Procedures, Azure DevOps, CI/CD",
   },
   {
     title: "Software Engineer Intern",
     company: "Telaverge Communications",
-    duration: "May-22 Aug 2022 | Bengaluru",
+    duration: "May 2022 – Aug 2022 | Bengaluru",
     details: [
-      "Developed the company’s official website from scratch to launch, contributing to 50% of the project's implementation.",
+      "Developed the company's official website from scratch to launch, contributing to 50% of the project's implementation.",
     ],
     techStack: "JavaScript, Node.js, REST API, WordPress, CSS, React.js, HTML5",
   },
   {
     title: "Software Engineer Intern",
-    company: "SysCloud (SaaS Data Protection Platform, Chennai)",
-    duration: "Dec 2021 – May 2022 | Bengaluru",
+    company: "SysCloud (SaaS Data Protection Platform)",
+    duration: "Dec 2021 – May 2022 | Chennai",
     details: [
       "Created Node.js scripts to generate test data automatically, saving 100+ hours of manual work per month.",
       "Developed automated testing scripts using Cypress, improving test coverage by 15%.",
@@ -123,6 +123,5 @@ function WorkExperience() {
     </section>
   );
 }
-
 
 export default WorkExperience;

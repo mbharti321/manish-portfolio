@@ -41,7 +41,7 @@ function App() {
       <Container className="main-section">
         <Skills />
         <WorkExperience />
-        {/* <Projects /> */}
+        <Projects />
         <Contact />
       </Container>
       <Footer />

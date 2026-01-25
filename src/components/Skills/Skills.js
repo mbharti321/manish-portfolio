@@ -1,43 +1,58 @@
 import React from "react";
-import { Card, CardContent, Container, Typography, Grid, Box } from "@mui/material";
+import { Card, CardContent, Container, Typography, Grid, Box, Chip } from "@mui/material";
 import "./Skills.css";
 
 const skills = {
-  "Backend Development": [
+  "Programming Languages": [
     "Python",
-    "Flask",
-    "Node.js",
+    "C#",
+    "JavaScript",
+  ],
+  "Backend Development": [
+    "FastAPI",
     ".NET",
     "REST APIs",
+    "Microservices",
     "SQL",
-    "NoSQL",
+    "Redis",
+    "SQLAlchemy",
   ],
-  "Frontend Development": [
-    "JavaScript",
-    "React.js",
-    "Material UI",
-    "WordPress",
+  "AI/GenAI": [
+    "Retrieval-Augmented Generation (RAG)",
+    "Vector Databases",
+    "Large Language Models (LLMs)",
+    "Azure AI Search",
   ],
-  "Data Engineering": [
+  "Cloud & Data": [
+    "Azure Function App",
+    "Azure ServiceBus",
+    "Azure EventHub",
+    "Azure Storage Account",
+    "Azure AppConfig",
+    "Azure Managed Identity",
+    "AWS Foundations",
     "Azure Synapse",
     "PySpark",
-    "ETL",
-    "Data Pipelines",
-    "Power BI",
-    "Automation",
   ],
-  "Other Skills": [
-    "Data Structures",
-    "Selenium",
-    "Jira",
-    "Blockchain Fundamentals",
-  ],
-  "DevOps & Cloud": [
-    "Azure (Function App, StorageAccount, ServiceBusQueue, EventHub, AppConfig, Managed Identity)",
+  "DevOps & Monitoring": [
     "Azure DevOps",
     "CI/CD Pipelines",
     "GitHub",
-    "AWS Foundations",
+    "Application Insights",
+    "Opsgenie",
+  ],
+  "Frontend Development": [
+    "JavaScript",
+    "React",
+    "TypeScript",
+    "HTML",
+    "CSS",
+  ],
+  "Tools": [
+    "Jira",
+    "Git",
+    "Linux",
+    "Postman",
   ],
 };
 
@@ -45,22 +60,74 @@ function Skills() {
   return (
     <section id="skills">
       <Container maxWidth="lg">
-        <Typography variant="h4" gutterBottom className="skills-title">
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          className="skills-title"
+          sx={{ mb: 4 }}
+        >
           Skills
         </Typography>
         <Grid container spacing={3} className="skills-grid">
           {Object.entries(skills).map(([category, skillList], index) => (
-            <Grid item xs={12} sm={6} md={4} key={index} className="skills-grid-item">
-              <Card className="skill-category">
-                <CardContent>
-                  <Typography gutterBottom className="skill-category-title">
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4}
+              key={index} 
+              className="skills-grid-item"
+              sx={{ display: "flex" }}
+            >
+              <Card 
+                className="skill-category"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: "0 8px 24px rgba(25, 118, 210, 0.2)",
+                  },
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: 2.5 }}>
+                  <Typography 
+                    gutterBottom 
+                    className="skill-category-title"
+                    sx={{ mb: 2 }}
+                  >
                     {category}
                   </Typography>
-                  <Box component="ul" className="skill-list">
+                  <Box 
+                    sx={{ 
+                      display: "flex", 
+                      flexWrap: "wrap", 
+                      gap: 1,
+                      flexGrow: 1,
+                      alignContent: "flex-start"
+                    }}
+                  >
                     {skillList.map((skill, idx) => (
-                      <li key={idx} className="skill-list-item">
-                        <Typography variant="body1">{skill}</Typography>
-                      </li>
+                      <Chip
+                        key={idx}
+                        label={skill}
+                        size="small"
+                        className="skill-chip"
+                        sx={{
+                          backgroundColor: "#e3f2fd",
+                          color: "#1976d2",
+                          fontWeight: 500,
+                          fontSize: "0.85rem",
+                          "&:hover": {
+                            backgroundColor: "#1976d2",
+                            color: "#fff",
+                          },
+                          transition: "all 0.2s ease",
+                        }}
+                      />
                     ))}
                   </Box>
                 </CardContent>

@@ -109,14 +109,16 @@ function About() {
             </div>
           </div>
           <Typography variant="body1" className="about-description">
-            Hi, I'm Manish Bharti — a passionate Software Engineer with close to
-            3 years of experience in building scalable web applications and
-            backend systems. I specialize in Python, .NET, Flask, and Azure, and
-            have worked across full-stack technologies including React and
-            Node.js. I enjoy solving real-world problems with clean, efficient
-            code and love turning ideas into practical, user-friendly solutions.
-            My background spans both frontend and backend development, with a
-            focus on React, Node.js, and cloud technologies.
+            Hi, I’m Manish Bharti — a Software Engineer with 3+ years of
+            experience building scalable backend systems and production-grade
+            APIs. I specialize in Python, .NET, FastAPI, SQL, and Azure, and
+            have delivered real-world AI-powered solutions, including LLM and
+            RAG-based systems used in enterprise logistics. I enjoy solving
+            complex operational problems, designing reliable systems, and
+            building software that improves performance, efficiency, and
+            business outcomes. I also have working experience across the
+            frontend stack with React and JavaScript, enabling end-to-end
+            solution delivery.
           </Typography>
 
           <Typography variant="body2" className="about-research">
