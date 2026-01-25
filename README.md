@@ -110,3 +110,6 @@ Feel free to reach out for collaboration, opportunities, or just to say hello!
 ---
 
 *Last updated: 2025*
+# Manish Bharti
+- [How to deploy react app on Hostinger](https://shefali.dev/deploy-a-react-app-on-hostinger/) 
+- Protfolio reference: https://soumyajit.vercel.app/about
