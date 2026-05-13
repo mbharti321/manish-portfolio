@@ -37,7 +37,7 @@ function About() {
               </Typography>
 
               <Typography variant="h6" className="about-role">
-                Software Engineer || Blockchain Explorer
+                AI Engineer | GenAI & Backend Systems
               </Typography>
 
               <Box className="about-divider" />
@@ -104,25 +104,25 @@ function About() {
               </Box>
 
               <Typography variant="body1" className="about-tagline">
-                Exploring, learning, building.
+                Python | GenAI | RAG | Backend Systems | Azure Cloud | React
               </Typography>
             </div>
           </div>
           <Typography variant="body1" className="about-description">
-            Hi, I’m Manish Bharti — a Software Engineer with 3+ years of
-            experience building scalable backend systems and production-grade
-            APIs. I specialize in Python, .NET, FastAPI, SQL, and Azure, and
-            have delivered real-world AI-powered solutions, including LLM and
-            RAG-based systems used in enterprise logistics. I enjoy solving
-            complex operational problems, designing reliable systems, and
-            building software that improves performance, efficiency, and
-            business outcomes. I also have working experience across the
-            frontend stack with React and JavaScript, enabling end-to-end
-            solution delivery.
+            {/* <div className="about-location">📍 Bengaluru, India </div> */}
+            Hi, I'm Manish Bharti — an AI Engineer with 4+ years of experience
+            building scalable backend systems and GenAI solutions. I specialize
+            in Python, FastAPI, .NET, SQL, and Azure cloud. I've delivered
+            production-grade systems including Agentic AI chatbots, RAG
+            platforms, and event-driven architectures processing 50K+
+            transactions daily. I focus on solving complex operational problems,
+            designing reliable systems, and building software that delivers
+            measurable business impact. Full-stack capable with React,
+            JavaScript, and TypeScript for end-to-end solution delivery.
           </Typography>
 
           <Typography variant="body2" className="about-research">
-            Find my research paper:{" "}
+            Find my <b>research paper</b>:{" "}
             <Link
               href="https://link.springer.com/chapter/10.1007/978-981-19-3035-5_53"
               className="research-link"

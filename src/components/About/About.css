@@ -19,7 +19,7 @@
 .about-header {
     display: flex;
     gap:4rem;
-    /* margin-bottom: 2rem; */
+    margin-bottom: 1rem;
     text-align: center;
     justify-content: center;
 }
@@ -44,13 +44,14 @@
 .about-avatar-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
+    align-items: center;
 }
 
 .about-avatar-background {
-    width: 180px;
-    height: 180px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 195px;
+    height: 195px;
+    background: linear-gradient(135deg, #667eeae1 0%, #764ba2d8 100%);
     /* min-height: 100vh; */
     border-radius: 50%;
     display: flex;
@@ -60,8 +61,8 @@
 }
 
 .about-avatar {
-    width: 175px !important;
-    height: 175px !important;
+    width: 190px !important;
+    height: 190px !important;
     border: none !important;
     box-shadow: none !important;
 }
@@ -116,8 +117,16 @@
 .about-tagline {
     font-style: italic !important;
     color: #000000 !important;
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
     font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+.about-location {
+    color: #667eea !important;
+    font-weight: 500 !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 0.95rem !important;
 }
 
 .about-description {
