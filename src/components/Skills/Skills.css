@@ -1,40 +1,80 @@
 #skills {
-    padding: 2rem;
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f7f8fa 0%, #e8eef7 100%);
+    position: relative;
+    border-radius: 20px;
+    /* flex-direction: row; */
 }
 
-#skills h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+#skills::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #1976d2, transparent);
 }
 
-.skills-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+.skills-title {
+    font-weight: 700 !important;
+    color: #1976d2 !important;
+    /* text-align: center; */
+    letter-spacing: 0.5px;
+}
+
+
+
+.skills-grid {
+    width: 100%;
+    flex-direction: column !important;
 }
 
 .skill-category {
     background-color: #fff;
-    padding: 1rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    border: 1px solid rgba(25, 118, 210, 0.1);
 }
 
-.skill-category h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+.skill-category-title {
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    color: #1976d2 !important;
+    margin-bottom: 0.5rem !important;
 }
 
-.skill-category ul {
-    list-style: none;
-    padding: 0;
+.skill-chip {
+    border-radius: 8px !important;
+}
+
+.skill-list {
+    list-style: disc;
+    padding-left: 1.2rem;
     margin: 0;
-    
-    padding-left: 1rem;
 }
 
-.skill-category li {
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-    list-style: circle;
+.skill-list-item {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+@media (max-width: 900px) {
+    .skill-category {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    #skills {
+        padding: 2rem 0;
+    }
+    
+    .skill-category-title {
+        font-size: 1rem !important;
+    }
+    
+    .skill-list {
+        padding-left: 1rem;
+    }
 }

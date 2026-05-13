@@ -1,65 +1,141 @@
 import React from "react";
-import "./Skills.css"; // You'll need to create this CSS file
+import { Card, CardContent, Container, Typography, Grid, Box, Chip } from "@mui/material";
+import "./Skills.css";
+
+const skills = {
+  "Programming Languages": [
+    "Python",
+    "C#",
+    "JavaScript",
+  ],
+  "Backend Development": [
+    "FastAPI",
+    ".NET",
+    "REST APIs",
+    "Microservices",
+    "SQL",
+    "Redis",
+    "SQLAlchemy",
+  ],
+  "AI/GenAI": [
+    "Retrieval-Augmented Generation (RAG)",
+    "Vector Databases",
+    "Large Language Models (LLMs)",
+    "Azure AI Search",
+  ],
+  "Cloud & Data": [
+    "Azure Function App",
+    "Azure ServiceBus",
+    "Azure EventHub",
+    "Azure Storage Account",
+    "Azure AppConfig",
+    "Azure Managed Identity",
+    "AWS Foundations",
+    "Azure Synapse",
+    "PySpark",
+  ],
+  "DevOps & Monitoring": [
+    "Azure DevOps",
+    "CI/CD Pipelines",
+    "GitHub",
+    "Application Insights",
+    "Opsgenie",
+  ],
+  "Frontend Development": [
+    "JavaScript",
+    "React",
+    "TypeScript",
+    "HTML",
+    "CSS",
+  ],
+  "Tools": [
+    "Jira",
+    "Git",
+    "Linux",
+    "Postman",
+  ],
+};
 
 function Skills() {
   return (
     <section id="skills">
-      <h2>Skills</h2>
-      <div className="skills-container">
-        <div className="skill-category">
-          <h3>Backend Development</h3>
-          <ul>
-            <li>Python</li>
-            <li>Flask</li>
-            <li>Node.js</li>
-            <li>.NET</li>
-            <li>REST APIs</li>
-            <li>SQL</li>
-            <li>NoSQL</li>
-          </ul>
-        </div>
-        <div className="skill-category">
-          <h3>Frontend Development</h3>
-          <ul>
-            <li>JavaScript</li>
-            <li>React.js</li>
-            <li>Material UI</li>
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>WordPress</li>
-          </ul>
-        </div>
-        <div className="skill-category">
-          <h3>Data Engineering</h3>
-          <ul>
-            <li>Azure Synapse</li>
-            <li>PySpark</li>
-            <li>ETL</li>
-            <li>Data Pipelines</li>
-            <li>Power BI</li>
-            <li>Automation</li>
-          </ul>
-        </div>
-        <div className="skill-category">
-          <h3>DevOps & Cloud</h3>
-          <ul>
-            <li>Azure (Function Apps, Storage, etc.)</li>
-            <li>Azure DevOps</li>
-            <li>CI/CD Pipelines</li>
-            <li>GitHub</li>
-            <li>AWS Foundations</li>
-          </ul>
-        </div>
-        <div className="skill-category">
-          <h3>Other Skills</h3>
-          <ul>
-            <li>Data Structures</li>
-            <li>Selenium</li>
-            <li>Jira</li>
-            <li>Blockchain Fundamentals</li>
-          </ul>
-        </div>
-      </div>
+      <Container maxWidth="lg">
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          className="skills-title"
+          sx={{ mb: 4 }}
+        >
+          Skills
+        </Typography>
+        <Grid container spacing={3} className="skills-grid">
+          {Object.entries(skills).map(([category, skillList], index) => (
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4}
+              key={index} 
+              className="skills-grid-item"
+              sx={{ display: "flex" }}
+            >
+              <Card 
+                className="skill-category"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-8px)",
+                    boxShadow: "0 8px 24px rgba(25, 118, 210, 0.2)",
+                  },
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: 2.5 }}>
+                  <Typography 
+                    gutterBottom 
+                    className="skill-category-title"
+                    sx={{ mb: 2 }}
+                  >
+                    {category}
+                  </Typography>
+                  <Box 
+                    sx={{ 
+                      display: "flex", 
+                      flexWrap: "wrap", 
+                      gap: 1,
+                      flexGrow: 1,
+                      alignContent: "flex-start"
+                    }}
+                  >
+                    {skillList.map((skill, idx) => (
+                      <Chip
+                        key={idx}
+                        label={skill}
+                        size="small"
+                        className="skill-chip"
+                        sx={{
+                          backgroundColor: "#e3f2fd",
+                          color: "#1976d2",
+                          fontWeight: 500,
+                          fontSize: "0.85rem",
+                          "&:hover": {
+                            backgroundColor: "#1976d2",
+                            color: "#fff",
+                          },
+                          transition: "all 0.2s ease",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </section>
   );
 }
