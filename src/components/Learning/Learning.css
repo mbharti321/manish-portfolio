@@ -1,0 +1,196 @@
+.learn-card {
+  border-radius: 12px;
+  transition: transform 0.25s cubic-bezier(.2,.9,.3,1), box-shadow 0.25s, border-color 0.2s;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* min-height: 220px; */
+}
+.learn-card:hover {
+  /* transform: translateY(-6px) scale(1.002); */
+  box-shadow: 0 14px 36px rgba(20, 24, 40, 0.12);
+}
+.learn-card.active {
+  border: 2px solid rgba(102,126,234,0.28);
+  background: linear-gradient(135deg, rgba(102,126,234,0.04), rgba(102,126,234,0.02));
+}
+.learn-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(102,126,234,0.12), rgba(118,75,162,0.04));
+  color: #4b49ff;
+}
+.learn-iframe-wrap {
+  width: 100%;
+  height: 72vh;
+  /* border-radius: 12px; */
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+  background: #0b0b0b;
+}
+.learn-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.learn-iframe-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: #fff;
+}
+
+.learn-iframe-wrap .learn-iframe { background: #fff; }
+
+/* Section headline */
+section#learn h4 {
+  color: #334155;
+  font-size: 2rem;
+}
+
+@media (max-width: 900px) {
+  .learn-iframe-wrap { height: 56vh; }
+  .learn-icon-wrap { width: 48px; height: 48px; }
+}
+
+/* Layout and card sizing */
+.learn-container { 
+  padding-top: 20px; 
+  padding-bottom: 32px; 
+}
+.learn-title { 
+  font-weight: 700; 
+  color: #1e3a8a; 
+  margin-bottom: 24px; 
+}
+.learn-grid { 
+  margin-bottom: 24px;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+/* Make Grid items full height */
+.learn-grid .MuiGrid-root {
+  display: flex !important;
+  max-width: 100% !important;
+}
+
+.learn-card-content { 
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  padding: 16px;
+  /* width: 100%; */
+  height: 100%;
+}
+
+.learn-icon-wrap {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.learn-card-body { 
+  grid-column: 2;
+  grid-row: 1;
+  display: flex; 
+  flex-direction: column; 
+  justify-content: flex-start;
+}
+.learn-card-head { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+}
+.learn-card-title { 
+  font-weight: 700; 
+  font-size: 1.1rem; 
+}
+.live-chip { 
+  font-weight: 700; 
+  background: linear-gradient(90deg, #667eea, #764ba2); 
+  color: #fff; 
+}
+.learn-card-desc { 
+  color: #505050; 
+  margin-top: 6px; 
+}
+.learn-card-actions { 
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex; 
+  flex-direction: row; 
+  gap: 8px; 
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.learn-card-actions button {
+  flex: 1;
+  min-width: 100px;
+}
+.btn-open { 
+  color: #1e88e5; 
+}
+
+/* Small screens: stack cards vertically */
+@media (max-width: 599px) {
+  .learn-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .learn-card {
+    min-height: auto;
+  }
+  .learn-card-content { 
+    padding: 14px; 
+  }
+}
+
+/* Buttons */
+.btn-primary { 
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+}
+.btn-primary:hover { 
+  filter: brightness(0.95) !important;
+}
+.btn-outline { 
+  border-color: rgba(102,126,234,0.25) !important;
+}
+.btn-text { 
+  background: transparent !important; 
+  color: #e6eefc !important; 
+}
+
+/* Iframe toolbar */
+.learn-iframe-toolbar { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px 16px; 
+  background: rgba(255,255,255,0.02); 
+}
+.learn-iframe-title { 
+  font-weight: 700; 
+  color: #fff; 
+}
+.learn-iframe-actions { 
+  display: flex; 
+  gap: 8px; 
+}

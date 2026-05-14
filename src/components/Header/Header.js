@@ -28,6 +28,7 @@ function Header() {
     { label: "Skills", id: "#skills" },
     { label: "Work Experience", id: "#work-experience" },
     { label: "Projects", id: "#projects" },
+    { label: "Learn", id: "#learn" },
     { label: "Contact", id: "#contact" },
   ];
 

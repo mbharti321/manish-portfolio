@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merkle Trees — The Complete Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060d18;
+            --surface: #0c1829;
+            --surface2: #0f2040;
+            --border: #1a3a5c;
+            --border2: #254d7a;
+            --cyan: #00d4ff;
+            --cyan-dim: #00a8cc;
+            --amber: #ffab40;
+            --green: #00e676;
+            --purple: #b388ff;
+            --red: #ff5252;
+            --text: #dce8f5;
+            --muted: #5a7898;
+            --muted2: #3a5a7a;
+            --font-head: 'Syne', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-body: 'Lora', serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            height: 60px;
+            background: rgba(6, 13, 24, 0.92);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-logo {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--cyan);
+            letter-spacing: 0.05em;
+            margin-right: auto;
+            flex-shrink: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0;
+            list-style: none;
+            overflow-x: auto;
+        }
+
+        .nav-links li a {
+            display: block;
+            padding: 0.3rem 0.7rem;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: var(--cyan);
+        }
+
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 2rem 5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.75rem;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--font-head);
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: var(--text);
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--cyan);
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            color: #a8c4d8;
+        }
+
+        strong {
+            color: var(--text);
+        }
+
+        em {
+            color: var(--amber);
+            font-style: italic;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+        }
+
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 80px;
+            max-width: 1200px;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--cyan);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.2s forwards;
+        }
+
+        #hero h1 {
+            opacity: 0;
+            animation: fadeUp 0.6s 0.4s forwards;
+        }
+
+        #hero h1 span {
+            color: var(--cyan);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 620px;
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.6s forwards;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.8s forwards;
+        }
+
+        .tag {
+            padding: 0.3rem 0.9rem;
+            border: 1px solid var(--border2);
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .hero-visual {
+            margin-top: 4rem;
+            opacity: 0;
+            animation: fadeUp 0.8s 1s forwards;
+        }
+
+        #heroCanvas {
+            width: 100%;
+            max-width: 800px;
+            display: block;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-accent {
+            border-left: 3px solid var(--cyan);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.04), transparent);
+        }
+
+        .card-amber {
+            border-left: 3px solid var(--amber);
+            background: linear-gradient(135deg, rgba(255, 171, 64, 0.05), transparent);
+        }
+
+        .analogy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .analogy-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .analogy-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        .analogy-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .analogy-title {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .hash-demo {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin: 2rem 0;
+        }
+
+        .hash-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 0.75rem;
+        }
+
+        .hash-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .hash-output-label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.4rem;
+        }
+
+        .hash-output {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--green);
+            word-break: break-all;
+            background: var(--bg);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            min-height: 3rem;
+        }
+
+        .hash-prop {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            margin: 0.3rem 0.3rem 0 0;
+        }
+
+        .avalanche-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media(max-width:600px) {
+            .avalanche-demo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .av-col label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .tabs {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.2s;
+            border-right: 1px solid var(--border);
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--cyan);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        @media(max-width:700px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mini-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1.5rem 0;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+        }
+
+        .tree-level {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.2rem 0;
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            padding: 0.35rem 0.6rem;
+            border: 1px solid var(--border2);
+            color: var(--text);
+            background: var(--surface);
+            font-size: 0.65rem;
+            white-space: nowrap;
+        }
+
+        .tree-node.leaf {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .tree-node.internal {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+        .tree-node.root {
+            border-color: var(--amber);
+            color: var(--amber);
+            background: rgba(255, 171, 64, 0.08);
+        }
+
+        .tree-connector {
+            font-size: 0.8rem;
+            color: var(--muted2);
+            text-align: center;
+        }
+
+        .math-box {
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--cyan);
+            margin: 1rem 0;
+            overflow-x: auto;
+            line-height: 2;
+        }
+
+        .math-box .comment {
+            color: var(--muted);
+        }
+
+        .math-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        @media(max-width:700px) {
+            .math-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .math-fact {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .math-fact .label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+        }
+
+        .math-fact .value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--amber);
+            font-weight: 700;
+        }
+
+        .math-fact .desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.3rem;
+            font-family: var(--font-body);
+        }
+
+        .use-case {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .use-case-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .use-case-header:hover {
+            background: rgba(0, 212, 255, 0.04);
+        }
+
+        .uc-icon {
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .uc-title {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .uc-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .uc-chevron {
+            color: var(--muted);
+            transition: transform 0.3s;
+            font-size: 1rem;
+        }
+
+        .use-case.open .uc-chevron {
+            transform: rotate(180deg);
+        }
+
+        .use-case-body {
+            display: none;
+            padding: 0 1.5rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .use-case.open .use-case-body {
+            display: block;
+        }
+
+        .use-case-body p {
+            margin-top: 1rem;
+            font-size: 0.92rem;
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media(max-width:600px) {
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ps-box {
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .ps-problem {
+            background: rgba(255, 82, 82, 0.06);
+            border: 1px solid rgba(255, 82, 82, 0.15);
+        }
+
+        .ps-solution {
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid rgba(0, 230, 118, 0.15);
+        }
+
+        .ps-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.4rem;
+        }
+
+        .ps-problem .ps-label {
+            color: var(--red);
+        }
+
+        .ps-solution .ps-label {
+            color: var(--green);
+        }
+
+        .ps-box p {
+            font-size: 0.85rem;
+            color: #a8c4d8;
+            margin: 0;
+        }
+
+        #playground {
+            max-width: 1200px;
+            padding-bottom: 8rem;
+        }
+
+        .playground-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        @media(max-width:900px) {
+            .playground-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pg-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .pg-panel h4 {
+            font-family: var(--font-head);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .leaf-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .leaf-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .leaf-num {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+            width: 20px;
+            flex-shrink: 0;
+        }
+
+        .leaf-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .leaf-input:focus {
+            border-color: var(--cyan);
+        }
+
+        .leaf-del {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 4px;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .leaf-del:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--cyan);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background: var(--cyan-dim);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .pg-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .proof-output {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            line-height: 1.8;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .root-display {
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .root-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.4rem;
+        }
+
+        .root-hash {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--amber);
+            word-break: break-all;
+            transition: color 0.3s;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.4rem;
+        }
+
+        .dot-green {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .dot-red {
+            background: var(--red);
+            box-shadow: 0 0 6px var(--red);
+        }
+
+        .dot-amber {
+            background: var(--amber);
+            box-shadow: 0 0 6px var(--amber);
+        }
+
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin: 1.5rem 0;
+        }
+
+        .comp-table th {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border2);
+        }
+
+        .comp-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: #a8c4d8;
+        }
+
+        .comp-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comp-table td:first-child {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .highlight-row td {
+            color: var(--cyan) !important;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--border2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 0.15rem;
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .step-content h4 {
+            font-family: var(--font-head);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.35rem;
+        }
+
+        .step-content p {
+            margin-bottom: 0;
+            font-size: 0.92rem;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 4px;
+            padding: 0.15em 0.4em;
+            font-size: 0.85em;
+            color: var(--cyan);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted2);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logo">⬡ MERKLE</div>
+        <ul class="nav-links">
+            <li><a href="#intro">Intro</a></li>
+            <li><a href="#prereqs">Prerequisites</a></li>
+            <li><a href="#howit">How It Works</a></li>
+            <li><a href="#math">Mathematics</a></li>
+            <li><a href="#usecases">Use Cases</a></li>
+            <li><a href="#playground">Playground</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div class="hero-eyebrow">// A Complete Visual Guide — From Intuition to Implementation</div>
+        <h1>The <span>Merkle Tree</span><br>A Fingerprint<br>of Fingerprints</h1>
+        <p class="hero-sub">The data structure that powers Bitcoin, Git, IPFS, and every modern blockchain. Understand
+            it from first principles — no prior cryptography knowledge needed.</p>
+        <div class="hero-tags">
+            <span class="tag">Intuition First</span>
+            <span class="tag">Interactive Demos</span>
+            <span class="tag">Cryptography</span>
+            <span class="tag">Computer Science</span>
+            <span class="tag">Real Use Cases</span>
+            <span class="tag">Live Playground</span>
+        </div>
+        <div class="hero-visual">
+            <canvas id="heroCanvas" height="240"></canvas>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- INTRO -->
+    <section id="intro">
+        <div class="section-label">// Section 01 — The Intuition</div>
+        <h2>What is a Merkle Tree?</h2>
+        <p>Before diving into cryptography, let's build an intuitive mental model. Here are three everyday analogies
+            that capture the essence perfectly.</p>
+
+        <div class="analogy-grid reveal">
+            <div class="analogy-card">
+                <div class="analogy-icon">📚</div>
+                <div class="analogy-title">The Library Audit</div>
+                <p style="font-size:0.88rem;margin:0;color:#a8c4d8;">A library has 1,000,000 books. To verify that book
+                    #482,391 wasn't altered overnight, the librarian doesn't re-read all million books. Instead, she
+                    checks ~20 "shelf summary cards" — one per shelf, floor, wing. A Merkle tree is that exact audit
+                    trail: a cascade of summaries that lets you verify one thing without checking everything.</p>
+            </div>
+            <div class="analogy-card">
+                <div class="analogy-icon">🌳</div>
+                <div class="analogy-title">Family Fingerprints</div>
+                <p style="font-size:0.88rem;margin:0;color:#a8c4d8;">Every person in a family has a unique fingerprint.
+                    Two siblings' fingerprints are blended into their parent's combined fingerprint. Two parents → one
+                    grandparent's fingerprint. One root fingerprint represents the entire family. Change one person's
+                    record — every ancestor's fingerprint changes. The tampering is instantly detectable.</p>
+            </div>
+            <div class="analogy-card">
+                <div class="analogy-icon">🏢</div>
+                <div class="analogy-title">Corporate Reporting</div>
+                <p style="font-size:0.88rem;margin:0;color:#a8c4d8;">A CEO doesn't read every employee's daily report.
+                    Employees report to managers, managers to directors, directors to the CEO. The CEO's summary
+                    reflects everything below. One fraudulent employee report? Every level above changes. The
+                    discrepancy is detectable without the CEO reading a single individual report.</p>
+            </div>
+        </div>
+
+        <div class="card card-accent reveal">
+            <h3 style="margin-bottom:0.5rem;">The Core Idea in One Sentence</h3>
+            <p style="font-size:1.05rem;margin:0;color:var(--text);">A Merkle tree lets you <em>prove that a single
+                    piece of data belongs to a large dataset</em> — with cryptographic certainty — <strong>without
+                    revealing or downloading the rest of the dataset.</strong></p>
+        </div>
+
+        <h3 class="reveal" style="color:var(--text);margin-top:2rem;">Why does the human mind need this?</h3>
+        <p class="reveal">Human trust requires verification. But verifying everything from scratch is cognitively
+            impossible at scale — re-reading the whole blockchain, every file in a repository. Merkle trees give
+            computers (and humans by proxy) the ability to <strong>trust summaries</strong>, just as you trust a
+            doctor's bloodwork summary without reading raw instrument data. The breakthrough is that each summary is
+            <em>mathematically tamper-evident</em>. You can't fake the fingerprint.</p>
+
+        <div class="mini-tree reveal">
+            <div class="tree-level">
+                <div class="tree-node root">Root Hash — "fingerprint of everything"</div>
+            </div>
+            <div class="tree-connector" style="margin:0.3rem 0;">╱
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ╲</div>
+            <div class="tree-level">
+                <div class="tree-node internal">Hash(A+B)</div>
+                <div style="width:2rem;"></div>
+                <div class="tree-node internal">Hash(C+D)</div>
+            </div>
+            <div class="tree-connector" style="margin:0.3rem 0;">
+                ╱╲&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╱╲</div>
+            <div class="tree-level">
+                <div class="tree-node leaf">Hash(A)</div>
+                <div class="tree-node leaf">Hash(B)</div>
+                <div class="tree-node leaf">Hash(C)</div>
+                <div class="tree-node leaf">Hash(D)</div>
+            </div>
+            <div class="tree-connector" style="margin:0.3rem 0;">
+                &nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+            </div>
+            <div class="tree-level" style="gap:0.35rem;">
+                <div class="tree-node" style="font-size:0.6rem;text-align:center;max-width:90px;">"Alice→Bob<br>5 BTC"
+                </div>
+                <div class="tree-node" style="font-size:0.6rem;text-align:center;max-width:90px;">"Bob→Carol<br>3 BTC"
+                </div>
+                <div class="tree-node" style="font-size:0.6rem;text-align:center;max-width:90px;">"Carol→Dave<br>1 BTC"
+                </div>
+                <div class="tree-node" style="font-size:0.6rem;text-align:center;max-width:90px;">"Dave→Eve<br>2 BTC"
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PREREQUISITES -->
+    <section id="prereqs">
+        <div class="section-label">// Section 02 — Prerequisites</div>
+        <h2>Building Blocks You Need First</h2>
+        <p>Two concepts are essential prerequisites: <strong>cryptographic hashing</strong> and <strong>binary
+                trees</strong>. Play with the interactive demos below — understanding comes from doing, not reading.</p>
+
+        <div class="tabs reveal">
+            <button class="tab-btn active" onclick="switchTab('hash')">🔐 Hashing — The Fingerprint Machine</button>
+            <button class="tab-btn" onclick="switchTab('trees')">🌲 Binary Trees — The Structure</button>
+        </div>
+
+        <div class="tab-content active" id="tab-hash">
+            <div class="card card-accent">
+                <h3>What is a Hash Function?</h3>
+                <p>A hash function is a <em>mathematical blender</em>. You feed it any amount of data — one word, a
+                    novel, a terabyte video — and it produces a <strong>fixed-size output</strong> (the "hash") that
+                    acts as that data's unique fingerprint.</p>
+                <p style="margin:0;">The critical magic: you <strong>cannot work backwards</strong>. Given the
+                    fingerprint, there is no way to reconstruct what went in. And changing even one bit of the input
+                    produces a completely different fingerprint.</p>
+            </div>
+
+            <div class="two-col">
+                <div class="card" style="margin:0;padding:1.25rem;">
+                    <h4 style="font-family:var(--font-head);font-size:0.95rem;color:var(--text);margin-bottom:0.75rem;">
+                        ✅ Properties of SHA-256</h4>
+                    <ul style="color:#a8c4d8;font-size:0.85rem;padding-left:1.2rem;line-height:2.2;">
+                        <li><strong>Deterministic</strong> — same input, always same output</li>
+                        <li><strong>One-way</strong> — impossible to reverse the hash</li>
+                        <li><strong>Avalanche effect</strong> — 1 bit change → ~50% output flips</li>
+                        <li><strong>Fixed size</strong> — always exactly 64 hex characters (256 bits)</li>
+                        <li><strong>Collision resistant</strong> — practically impossible to find two inputs with same
+                            output</li>
+                    </ul>
+                </div>
+                <div class="card" style="margin:0;padding:1.25rem;">
+                    <h4 style="font-family:var(--font-head);font-size:0.95rem;color:var(--text);margin-bottom:0.75rem;">
+                        ❌ What a Hash is NOT</h4>
+                    <ul style="color:#a8c4d8;font-size:0.85rem;padding-left:1.2rem;line-height:2.2;">
+                        <li><strong>Not encryption</strong> — you can't "decrypt" a hash</li>
+                        <li><strong>Not compression</strong> — output doesn't contain the data</li>
+                        <li><strong>Not random</strong> — fully deterministic</li>
+                        <li><strong>Not a checksum</strong> — checksums can be manipulated; hashes can't</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="hash-demo reveal">
+                <h3 style="color:var(--text);margin-bottom:1rem;">⚡ Live SHA-256 Demo — Type Anything</h3>
+                <input class="hash-input" id="hashInput" value="Hello, World!" placeholder="Type anything here..."
+                    autocomplete="off" spellcheck="false">
+                <div class="hash-output-label">SHA-256 Hash Output (64 hex characters = 256 bits)</div>
+                <div class="hash-output" id="hashOutput">Computing...</div>
+                <div style="margin-top:0.75rem;">
+                    <span class="hash-prop">✓ Always 64 characters</span>
+                    <span class="hash-prop">✓ Deterministic</span>
+                    <span class="hash-prop">✓ One-way function</span>
+                    <span id="lenProp" class="hash-prop">Computing...</span>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;">
+
+                <h4 style="font-family:var(--font-head);font-size:0.95rem;color:var(--text);margin-bottom:0.5rem;">🌊
+                    The Avalanche Effect — Observe One Character Change</h4>
+                <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Change one letter (e.g. lowercase →
+                    uppercase). The entire hash changes. This means that if anyone tampers with data even slightly, the
+                    hash betrays it immediately — the foundation of Merkle tree integrity.</p>
+                <div class="avalanche-demo">
+                    <div class="av-col">
+                        <label>Input A</label>
+                        <input class="hash-input" id="avA" value="merkle" style="margin-bottom:0.4rem;">
+                        <div class="hash-output-label">Hash A</div>
+                        <div class="hash-output" id="avHashA" style="font-size:0.7rem;min-height:2.5rem;"></div>
+                    </div>
+                    <div class="av-col">
+                        <label>Input B (try changing 1 character)</label>
+                        <input class="hash-input" id="avB" value="Merkle" style="margin-bottom:0.4rem;">
+                        <div class="hash-output-label">Hash B</div>
+                        <div class="hash-output" id="avHashB" style="font-size:0.7rem;min-height:2.5rem;"></div>
+                    </div>
+                </div>
+                <div id="avDiff"
+                    style="margin-top:0.75rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);padding:0.6rem 0.75rem;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-trees">
+            <div class="card card-accent">
+                <h3>What is a Binary Tree?</h3>
+                <p>A binary tree is a hierarchical structure where each <em>node</em> has at most <strong>two
+                        children</strong> — a left child and a right child. Data flows from leaves (bottom) up to the
+                    root (top).</p>
+
+                <div class="two-col">
+                    <div>
+                        <h4
+                            style="font-family:var(--font-head);font-size:0.9rem;color:var(--text);margin-bottom:0.6rem;">
+                            Terminology</h4>
+                        <table class="comp-table" style="margin:0;">
+                            <tr>
+                                <td><strong>Root</strong></td>
+                                <td style="color:#a8c4d8;">Top-most node, has no parent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Leaf</strong></td>
+                                <td style="color:#a8c4d8;">Bottom nodes with no children</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Internal</strong></td>
+                                <td style="color:#a8c4d8;">Nodes with children</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Height</strong></td>
+                                <td style="color:#a8c4d8;">Levels from root to deepest leaf</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sibling</strong></td>
+                                <td style="color:#a8c4d8;">Node sharing the same parent</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4
+                            style="font-family:var(--font-head);font-size:0.9rem;color:var(--text);margin-bottom:0.6rem;">
+                            Why Trees? The Power of O(log n)</h4>
+                        <p style="font-size:0.85rem;color:#a8c4d8;">If you have 1,000,000 leaves, the tree is only ~20
+                            levels tall. To find or verify any single leaf, you traverse at most ~20 nodes. This is
+                            <em>logarithmic efficiency</em> — the most important property of trees.</p>
+                        <div class="math-box" style="margin-top:0.75rem;font-size:0.78rem;">
+                            log₂(1,000,000) ≈ 20 levels
+                            log₂(1,000,000,000) ≈ 30 levels
+                            log₂(4,000,000,000 txns) ≈ 32 levels</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card reveal">
+                <h4 style="font-family:var(--font-head);font-size:1rem;color:var(--text);margin-bottom:0.75rem;">Perfect
+                    Binary Tree — Explore Different Depths</h4>
+                <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Merkle trees use <em>perfect binary
+                        trees</em>: all leaves at the same level, all internal nodes have exactly two children.</p>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+                    <button class="btn btn-outline" onclick="showTreeDepth(1)">Depth 1 (2 leaves)</button>
+                    <button class="btn btn-outline" onclick="showTreeDepth(2)">Depth 2 (4 leaves)</button>
+                    <button class="btn btn-outline" onclick="showTreeDepth(3)">Depth 3 (8 leaves)</button>
+                    <button class="btn btn-outline" onclick="showTreeDepth(4)">Depth 4 (16 leaves)</button>
+                </div>
+                <canvas id="treeVizCanvas" width="600" height="220" style="max-width:100%;"></canvas>
+                <div id="treeStats"
+                    style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);margin-top:0.75rem;padding:0.6rem 0.75rem;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <section id="howit">
+        <div class="section-label">// Section 03 — Construction</div>
+        <h2>Building a Merkle Tree, Step by Step</h2>
+        <p>Let's construct a Merkle tree from four Bitcoin transactions. This is exactly how Bitcoin blocks store and
+            verify transactions.</p>
+
+        <div style="margin:2rem 0;">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h4>Start with raw data — the leaves</h4>
+                    <p>You have <code>n</code> pieces of data. In Bitcoin these are transactions. In Git they're files.
+                        In IPFS they're file chunks. Here we have 4 transactions:</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+                        <div class="tree-node leaf" style="max-width:none;font-size:0.72rem;padding:0.5rem 0.75rem;">
+                            "Alice→Bob: 5 BTC"</div>
+                        <div class="tree-node leaf" style="max-width:none;font-size:0.72rem;padding:0.5rem 0.75rem;">
+                            "Bob→Carol: 3 BTC"</div>
+                        <div class="tree-node leaf" style="max-width:none;font-size:0.72rem;padding:0.5rem 0.75rem;">
+                            "Carol→Dave: 1 BTC"</div>
+                        <div class="tree-node leaf" style="max-width:none;font-size:0.72rem;padding:0.5rem 0.75rem;">
+                            "Dave→Eve: 2 BTC"</div>
+                    </div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h4>Hash each data item to create leaf hashes</h4>
+                    <p>Apply SHA-256 to each item. Output is always 256 bits (64 hex chars), regardless of input size.
+                        These become your <em>leaf nodes</em>.</p>
+                    <div class="math-box">
+                        HA = SHA256("Alice→Bob: 5 BTC") → a3f2...e91c
+                        HB = SHA256("Bob→Carol: 3 BTC") → 7d4a...3b88
+                        HC = SHA256("Carol→Dave: 1 BTC") → 9c1e...f445
+                        HD = SHA256("Dave→Eve: 2 BTC") → 2b7f...a92d</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h4>Pair and hash — build internal nodes</h4>
+                    <p>Take adjacent pairs of leaf hashes, concatenate them, hash the result. This creates the next
+                        level up. <strong>If odd number of nodes, duplicate the last one.</strong></p>
+                    <div class="math-box">
+                        HAB = SHA256(HA + HB) <span class="comment"> ← combines transactions A and B</span>
+                        HCD = SHA256(HC + HD) <span class="comment"> ← combines transactions C and D</span></div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h4>Repeat until one hash remains — the Root</h4>
+                    <p>Continue pairing and hashing level by level. When only one hash remains, that's the <em>Merkle
+                            Root</em> — a 32-byte fingerprint that cryptographically represents every transaction.</p>
+                    <div class="math-box">
+                        Root = SHA256(HAB + HCD) <span class="comment"> ← the Merkle Root</span>
+                        <span class="comment">// This 32-byte value goes into Bitcoin's block header</span>
+                    </div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <h4>Generate a Merkle Proof for any item</h4>
+                    <p>To prove transaction A is in the tree, you only need <code>HB</code> and <code>HCD</code>. A
+                        verifier recomputes <code>SHA256(SHA256(HA, HB), HCD)</code> and compares to the known Root.
+                        Match = proven! This works without any other data.</p>
+                    <div class="math-box">
+                        Proof for A = [ HB (right sibling), HCD (right uncle) ]
+                        <span class="comment">// 2 hashes for 4 items. For 1M items: only ~20 hashes needed!</span>
+                        <span class="comment">// Proof size: log₂(n) × 32 bytes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin:2rem 0;"
+            class="reveal">
+            <h4 style="font-family:var(--font-head);font-size:0.95rem;color:var(--text);margin-bottom:1rem;">Visualized
+                — Click any leaf to see its Merkle Proof highlighted</h4>
+            <canvas id="explainerCanvas" height="280" style="width:100%;cursor:pointer;"></canvas>
+            <div id="proofExplainer"
+                style="margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);min-height:40px;padding:0.6rem;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- MATH -->
+    <section id="math">
+        <div class="section-label">// Section 04 — Mathematics</div>
+        <h2>The Mathematics Behind Merkle Trees</h2>
+        <p>The mathematical properties are what make Merkle trees useful at scale. Logarithmic efficiency and collision
+            resistance make them both practical and secure.</p>
+
+        <div class="math-row reveal">
+            <div class="math-fact">
+                <div class="label">Tree Height</div>
+                <div class="value">h = ⌈log₂(n)⌉</div>
+                <div class="desc">For n leaves. 1 million leaves → height 20. 1 billion → height 30. The tree barely
+                    grows even as data explodes.</div>
+            </div>
+            <div class="math-fact">
+                <div class="label">Proof Size (hashes needed)</div>
+                <div class="value">O(log₂ n)</div>
+                <div class="desc">To prove 1 item in 1 billion: ~30 hashes × 32 bytes = 960 bytes. Compare to
+                    downloading gigabytes.</div>
+            </div>
+            <div class="math-fact">
+                <div class="label">Total Nodes (perfect tree)</div>
+                <div class="value">2n − 1</div>
+                <div class="desc">n leaf nodes + (n−1) internal nodes. Always odd. Clean and predictable.</div>
+            </div>
+            <div class="math-fact">
+                <div class="label">Verification Complexity</div>
+                <div class="value">O(log n)</div>
+                <div class="desc">Verifier performs at most h hash operations. Fast even for trillion-entry trees.</div>
+            </div>
+        </div>
+
+        <div class="card card-amber reveal">
+            <h3 style="color:var(--amber);">Formal Definition</h3>
+            <p>A Merkle tree is a complete binary tree T = (V, E) where:</p>
+            <div class="math-box">
+                <span class="comment">// For each leaf node v with data d:</span>
+                value(v) = H(d)
+
+                <span class="comment">// For each internal node v with children v_left and v_right:</span>
+                value(v) = H( value(v_left) ‖ value(v_right) )
+
+                <span class="comment">// The Merkle Root:</span>
+                Root(T) = value( root_node )
+
+                <span class="comment">// H = cryptographic hash function (SHA-256)</span>
+                <span class="comment">// ‖ = concatenation operator</span>
+            </div>
+        </div>
+
+        <h3 class="reveal" style="color:var(--text);margin-top:2rem;">Why Tampering is Computationally Impossible</h3>
+        <p class="reveal">The security rests entirely on SHA-256's collision resistance. A "collision" means finding two
+            different inputs <code>x ≠ y</code> such that <code>H(x) = H(y)</code>. For SHA-256:</p>
+
+        <div class="card reveal">
+            <div class="math-box">
+                SHA-256 output space: 2²⁵⁶ ≈ 10⁷⁷ possible hashes
+
+                To forge a leaf and maintain the same root, attacker must find
+                a collision using the birthday attack: ~2¹²⁸ attempts needed.
+
+                At 10²⁰ hash/second (every computer ever built, combined):
+                Time required ≈ 10¹⁸ years
+
+                <span class="comment">// Universe age ≈ 1.4 × 10¹⁰ years</span>
+                <span class="comment">// Verdict: Computationally infeasible. Forever.</span>
+            </div>
+        </div>
+
+        <h3 class="reveal" style="color:var(--text);margin-top:2rem;">Efficiency vs Alternatives</h3>
+        <table class="comp-table reveal">
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>Storage for verifier</th>
+                    <th>Proof size</th>
+                    <th>Verify time</th>
+                    <th>False positives</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Download everything</td>
+                    <td>Full dataset (100 GB)</td>
+                    <td>100 GB</td>
+                    <td>Hours</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>Bloom filter</td>
+                    <td>~1 MB</td>
+                    <td>N/A</td>
+                    <td>Fast</td>
+                    <td>Yes (probabilistic)</td>
+                </tr>
+                <tr>
+                    <td>Hash list</td>
+                    <td>n × 32 bytes</td>
+                    <td>32 bytes</td>
+                    <td>Fast</td>
+                    <td>None (but O(n) storage)</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td><strong>Merkle Proof</strong></td>
+                    <td>32 bytes (root only!)</td>
+                    <td>log(n) × 32 bytes</td>
+                    <td>Milliseconds</td>
+                    <td>None (cryptographic)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- USE CASES -->
+    <section id="usecases">
+        <div class="section-label">// Section 05 — Real-World Applications</div>
+        <h2>How Merkle Trees Solve Real Problems</h2>
+        <p>Merkle trees appear wherever large datasets need to be verified efficiently and securely. Click each to
+            explore the problem and solution in depth.</p>
+
+        <div class="use-case open reveal" id="uc-bitcoin">
+            <div class="use-case-header" onclick="toggleUC('uc-bitcoin')">
+                <div class="uc-icon">₿</div>
+                <div class="uc-title">Bitcoin — Lightweight Transaction Verification (SPV)</div>
+                <span class="uc-tag">Blockchain</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem Without Merkle Trees</div>
+                        <p>A mobile wallet needs to verify that a payment it received is genuinely included in a Bitcoin
+                            block. Without Merkle trees, it would need to download the entire block (1-4 MB) or the
+                            entire blockchain (500+ GB) just to verify one transaction among thousands.</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">Merkle's Solution (SPV — Simplified Payment Verification)</div>
+                        <p>Each block header contains only the 32-byte Merkle Root of all transactions. A mobile wallet
+                            downloads only block headers (~80 bytes each, ~60MB for all of Bitcoin history). To verify
+                            one transaction, it requests a ~320-byte Merkle proof from a full node. Done in
+                            milliseconds.</p>
+                    </div>
+                </div>
+                <p>In Bitcoin, miners commit to a specific set of transactions by embedding the Merkle Root in the block
+                    header. The proof-of-work (the massive computational effort) is done over the block header — which
+                    includes the Merkle Root. This means altering any transaction requires re-doing all the
+                    proof-of-work, making fraud economically suicidal.</p>
+                <div class="math-box">
+                    Block Header (80 bytes total):
+                    Version | 4 bytes
+                    Previous Hash | 32 bytes
+                    Merkle Root | 32 bytes ← fingerprints ALL transactions
+                    Timestamp | 4 bytes
+                    Difficulty | 4 bytes
+                    Nonce | 4 bytes
+
+                    SPV Proof for transaction T (e.g. block with 2048 txns):
+                    Sibling hashes needed = log₂(2048) = 11 hashes
+                    Proof size = 11 × 32 bytes = 352 bytes
+
+                    vs. downloading entire block: ~1,000,000 bytes (1 MB)</div>
+            </div>
+        </div>
+
+        <div class="use-case reveal" id="uc-git">
+            <div class="use-case-header" onclick="toggleUC('uc-git')">
+                <div class="uc-icon">🐙</div>
+                <div class="uc-title">Git — Content-Addressable Version Control</div>
+                <span class="uc-tag">Version Control</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem Without Merkle-like Structures</div>
+                        <p>A large codebase has 100,000 files. When you git pull, how does Git know which 3 files
+                            changed? How does it ensure data wasn't corrupted during transfer? Comparing file-by-file
+                            would be impossibly slow.</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">Git's Merkle DAG Solution</div>
+                        <p>Every file (blob) gets a SHA-1 hash. Every directory (tree) contains hashes of its
+                            files/subdirs — effectively a Merkle node. Every commit points to a root tree hash. Any file
+                            change cascades upward, creating a new commit hash. Git compares hashes, never bytes.</p>
+                    </div>
+                </div>
+                <p>When you run <code>git diff HEAD~1</code>, Git compares the tree hash of the previous commit root
+                    against the current. If root hashes match: nothing changed. If different, it walks down only the
+                    changed subtrees. This lets Git work with 100,000 files by checking ~17 hashes to find 3 changed
+                    files.</p>
+                <div class="math-box">
+                    commit a7b3c2f
+                    tree 9f2a4d1 ← hash of root directory (all files summarized)
+                    tree a3b9c4e ← hash of /src/
+                    blob f9a2d3c ← hash of main.py contents
+                    blob 2b7f1a9 ← hash of utils.py contents
+                    blob e4c2f8a ← hash of README.md
+
+                    <span class="comment">// Edit main.py → new blob hash → new /src/ tree hash
+                        // → new root tree hash → new commit hash
+                        // Everything else: unchanged. Git reuses cached objects.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="use-case reveal" id="uc-ipfs">
+            <div class="use-case-header" onclick="toggleUC('uc-ipfs')">
+                <div class="uc-icon">🌐</div>
+                <div class="uc-title">IPFS — Trustless Distributed File Storage</div>
+                <span class="uc-tag">Distributed Systems</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem</div>
+                        <p>In a peer-to-peer network, you download file chunks from hundreds of untrusted strangers. Any
+                            of them could send you silently corrupted or malicious data. There's no central server to
+                            trust.</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">IPFS's Content Addressing Solution</div>
+                        <p>Files are chunked and arranged in a Merkle DAG. The root hash becomes the "Content
+                            Identifier" (CID). Anyone sharing the same CID must be sharing identical content — the hash
+                            proves it. Each chunk is verified independently as it arrives.</p>
+                    </div>
+                </div>
+                <p>Because the CID is derived from content (not location), it's impossible to serve different content
+                    under the same address. This is called "content addressing" vs traditional "location addressing"
+                    (URLs). The content IS its own address. You can download chunks from 50 different peers
+                    simultaneously and verify each independently.</p>
+            </div>
+        </div>
+
+        <div class="use-case reveal" id="uc-cert">
+            <div class="use-case-header" onclick="toggleUC('uc-cert')">
+                <div class="uc-icon">🔏</div>
+                <div class="uc-title">Certificate Transparency — Detecting Rogue SSL Certificates</div>
+                <span class="uc-tag">Web Security</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem</div>
+                        <p>A rogue or compromised Certificate Authority could secretly issue a fake SSL certificate for
+                            google.com, enabling invisible man-in-the-middle attacks. How can Google (or you) detect
+                            unauthorized certificates issued in your name?</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">CT Logs Solution</div>
+                        <p>All certificates must be logged in public, append-only Merkle logs before browsers accept
+                            them. The Merkle structure makes logs tamper-evident: you can prove a certificate is in the
+                            log (inclusion proof) and prove the log hasn't been secretly modified (consistency proof).
+                        </p>
+                    </div>
+                </div>
+                <p>Google Chrome has required Certificate Transparency since 2018. Every TLS certificate you visit is in
+                    a public Merkle log. Domain owners can monitor these logs 24/7 for unauthorized certificate
+                    issuances. The Merkle tree makes it impossible to secretly remove a certificate after logging — the
+                    root hash would change, revealing the tampering. Auditors worldwide hold copies of the root hash.
+                </p>
+            </div>
+        </div>
+
+        <div class="use-case reveal" id="uc-db">
+            <div class="use-case-header" onclick="toggleUC('uc-db')">
+                <div class="uc-icon">🗄️</div>
+                <div class="uc-title">Distributed Databases — Anti-Entropy Sync (Cassandra, DynamoDB)</div>
+                <span class="uc-tag">Databases</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem</div>
+                        <p>Two database replicas diverge due to a network partition. They may each have billions of
+                            records. How do you efficiently find which records differ, without transferring the entire
+                            database?</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">Merkle Anti-Entropy Solution</div>
+                        <p>Both nodes build Merkle trees over their key-value ranges. Compare root hashes — if equal,
+                            they're identical (done!). If different, compare child hashes, narrowing down to the exact
+                            key ranges that diverged, syncing only those records.
+                    </div>
+                </div>
+            </div>
+            <div class="math-box">
+                Node A root: 3f9a... ≠ Node B root: 7b2c... ← different!
+
+                Compare children:
+                Left child: A=a4b2... = B=a4b2... ← same, skip
+                Right child: A=1c9f... ≠ B=8e3d... ← diverges here!
+
+                Walk right subtree only...
+                → Find exact 500 differing records out of 1 billion
+                → Transfer only those 500 records (not 1 billion)</div>
+        </div>
+        </div>
+
+        <div class="use-case reveal" id="uc-eth">
+            <div class="use-case-header" onclick="toggleUC('uc-eth')">
+                <div class="uc-icon">⬡</div>
+                <div class="uc-title">Ethereum — Merkle-Patricia Tries & ZK-Rollups</div>
+                <span class="uc-tag">Smart Contracts</span>
+                <div class="uc-chevron">▼</div>
+            </div>
+            <div class="use-case-body">
+                <div class="problem-solution">
+                    <div class="ps-box ps-problem">
+                        <div class="ps-label">The Problem</div>
+                        <p>Ethereum must prove not just transaction inclusion, but the complete <em>state</em> of every
+                            account (balance, nonce, contract code, storage) at any block. This state changes with every
+                            transaction. Simple Merkle trees aren't efficient for key-value lookups.</p>
+                    </div>
+                    <div class="ps-box ps-solution">
+                        <div class="ps-label">Merkle-Patricia Trie Solution</div>
+                        <p>Ethereum uses Merkle-Patricia Tries (MPT) — a hybrid of a Patricia trie (efficient key-value)
+                            and a Merkle tree. Three MPT roots per block: State Trie, Transaction Trie, Receipt Trie.
+                            Light clients can prove any account's balance with a tiny proof.</p>
+                    </div>
+                </div>
+                <p>ZK-rollups (like zkSync, StarkNet) take this further: they process thousands of transactions
+                    off-chain, then generate a cryptographic proof (zero-knowledge proof) that commits to the new Merkle
+                    state root. One cheap transaction on Ethereum proves thousands of layer-2 transactions. The Merkle
+                    root is the compact state commitment that makes this trustless.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PLAYGROUND -->
+    <section id="playground">
+        <div class="section-label">// Section 06 — Interactive Playground</div>
+        <h2>Build Your Own Merkle Tree</h2>
+        <p>Enter your own data, watch the tree compute in real-time with actual SHA-256, click leaves to generate Merkle
+            proofs, and tamper with data to witness detection.</p>
+
+        <div class="playground-layout">
+            <div>
+                <div class="pg-panel">
+                    <h4>📄 Data Blocks (Leaf Nodes)</h4>
+                    <div class="leaf-inputs" id="leafInputs"></div>
+                    <div class="pg-actions">
+                        <button class="btn btn-primary" onclick="addLeaf()">+ Add Block</button>
+                        <button class="btn btn-outline" onclick="resetLeaves()">↺ Reset</button>
+                    </div>
+                </div>
+
+                <div class="pg-panel" style="margin-top:1rem;">
+                    <h4>🔐 Merkle Root</h4>
+                    <div class="root-display">
+                        <div class="root-label">Root Hash (SHA-256)</div>
+                        <div class="root-hash" id="rootHashDisplay">—</div>
+                    </div>
+                    <div id="rootStatus"
+                        style="margin-top:0.75rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);">
+                        Add data to compute root</div>
+                </div>
+
+                <div class="pg-panel" style="margin-top:1rem;">
+                    <h4>🔍 Merkle Proof</h4>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;">Click any leaf node in the
+                        tree to generate its inclusion proof.</p>
+                    <div class="proof-output" id="proofOutput">
+                        <span style="color:var(--muted2);">No proof yet — click a leaf node in the tree.</span>
+                    </div>
+                </div>
+
+                <div class="pg-panel" style="margin-top:1rem;">
+                    <h4>⚡ Tamper Detection</h4>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;">Edit any data block above.
+                        Watch the root change completely (avalanche effect).</p>
+                    <div id="tamperStatus" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);">
+                        <span class="status-dot dot-amber"></span>Watching for changes...
+                    </div>
+                </div>
+            </div>
+
+            <div class="pg-panel" style="display:flex;flex-direction:column;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                    <h4 style="margin:0;">🌲 Live Merkle Tree (Real SHA-256)</h4>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn btn-outline" style="font-size:0.68rem;padding:0.4rem 0.7rem;"
+                            onclick="pgZoomIn()">＋</button>
+                        <button class="btn btn-outline" style="font-size:0.68rem;padding:0.4rem 0.7rem;"
+                            onclick="pgZoomOut()">－</button>
+                    </div>
+                </div>
+                <div style="flex:1;overflow:auto;border:1px solid var(--border);border-radius:8px;background:var(--bg);min-height:420px;position:relative;"
+                    id="pgCanvasWrap">
+                    <canvas id="pgCanvas" style="display:block;"></canvas>
+                    <div id="pgTooltip"
+                        style="position:absolute;display:none;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:0.5rem 0.75rem;font-family:var(--font-mono);font-size:0.68rem;color:var(--text);max-width:300px;word-break:break-all;pointer-events:none;z-index:10;">
+                    </div>
+                </div>
+                <div
+                    style="margin-top:0.75rem;display:flex;gap:1rem;flex-wrap:wrap;font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);">
+                    <span><span style="color:var(--cyan);">■</span> Leaf nodes</span>
+                    <span><span style="color:var(--purple);">■</span> Internal nodes</span>
+                    <span><span style="color:var(--amber);">■</span> Merkle Root</span>
+                    <span><span style="color:var(--green);">■</span> Proof path (click leaf)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div style="font-size:0.9rem;color:var(--muted);margin-bottom:0.5rem;font-family:var(--font-head);">The Complete
+            Merkle Tree Guide</div>
+        <div>All SHA-256 computations run locally in your browser via the Web Crypto API · No data sent anywhere</div>
+    </footer>
+
+    <script>
+        // ══════════════════════════════════════════════════════
+        // CRYPTO UTILITIES
+        // ══════════════════════════════════════════════════════
+        async function sha256(str) {
+            const buf = new TextEncoder().encode(str);
+            const hb = await crypto.subtle.digest('SHA-256', buf);
+            return Array.from(new Uint8Array(hb)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        function shortHash(h) { return h ? h.slice(0, 6) + '…' + h.slice(-4) : ''; }
+        function hexDiff(a, b) { let d = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++; return d; }
+
+        // ══════════════════════════════════════════════════════
+        // NAV SCROLL SPY
+        // ══════════════════════════════════════════════════════
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const sectionEls = document.querySelectorAll('section[id]');
+        new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+            });
+        }, { threshold: 0.3 }).observe && sectionEls.forEach(s => new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id)); });
+        }, { threshold: 0.3 }).observe(s));
+
+        // ══════════════════════════════════════════════════════
+        // REVEAL OBSERVER
+        // ══════════════════════════════════════════════════════
+        new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 }).observe
+            && document.querySelectorAll('.reveal').forEach(el => new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.08 }).observe(el));
+
+        // ══════════════════════════════════════════════════════
+        // HERO CANVAS — animated tree visualization
+        // ══════════════════════════════════════════════════════
+        (function () {
+            const cv = document.getElementById('heroCanvas'), ctx = cv.getContext('2d');
+            let W, H = 240, t = 0, nodes = [];
+            function resize() { W = cv.offsetWidth; cv.width = W; cv.height = H; buildNodes(); }
+            function buildNodes() {
+                nodes = [];
+                const levels = [[.5], [.25, .75], [.125, .375, .625, .875], [.0625, .1875, .3125, .4375, .5625, .6875, .8125, .9375]];
+                const ys = [.1, .35, .62, .88];
+                levels.forEach((row, li) => row.forEach((x, ni) => nodes.push({ x: x * W, y: ys[li] * H, level: li, idx: ni, phase: Math.random() * Math.PI * 2 })));
+            }
+            function draw() {
+                ctx.clearRect(0, 0, W, H); t += 0.012;
+                // edges
+                nodes.forEach(n => {
+                    if (!n.level) return;
+                    const p = nodes.filter(q => q.level === n.level - 1)[Math.floor(n.idx / 2)];
+                    if (!p) return;
+                    ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(p.x, p.y);
+                    ctx.strokeStyle = 'rgba(0,212,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+                });
+                // nodes
+                nodes.forEach(n => {
+                    const pulse = Math.sin(t * 1.4 + n.phase) * .3 + .7;
+                    const r = n.level === 0 ? 11 : n.level === 3 ? 5 : 7;
+                    const col = n.level === 0 ? '#ffab40' : n.level === 3 ? '#00d4ff' : '#b388ff';
+                    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = col + '20'; ctx.fill();
+                    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+                    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.globalAlpha = pulse; ctx.stroke(); ctx.globalAlpha = 1;
+                });
+                // traveling particle
+                const leafNodes = nodes.filter(n => n.level > 0);
+                const ei = Math.floor((t * .3 % 1) * leafNodes.length);
+                if (leafNodes[ei]) {
+                    const n = leafNodes[ei], p = nodes.filter(q => q.level === n.level - 1)[Math.floor(n.idx / 2)];
+                    if (p) {
+                        const lp = (t * .3 % 1 * leafNodes.length) % 1;
+                        ctx.beginPath(); ctx.arc(n.x + (p.x - n.x) * lp, n.y + (p.y - n.y) * lp, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = '#00e676'; ctx.fill();
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            window.addEventListener('resize', resize); resize(); draw();
+        })();
+
+        // ══════════════════════════════════════════════════════
+        // TABS
+        // ══════════════════════════════════════════════════════
+        function switchTab(id) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ['hash', 'trees'][i] === id));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + id));
+            if (id === 'trees') showTreeDepth(2);
+        }
+
+        // ══════════════════════════════════════════════════════
+        // HASH DEMO
+        // ══════════════════════════════════════════════════════
+        async function updateHash() {
+            const v = document.getElementById('hashInput').value;
+            const h = await sha256(v);
+            document.getElementById('hashOutput').textContent = h;
+            document.getElementById('lenProp').textContent = 'Output: ' + h.length + ' chars (256 bits)';
+        }
+        document.getElementById('hashInput').addEventListener('input', updateHash);
+        updateHash();
+
+        async function updateAvalanche() {
+            const a = document.getElementById('avA').value, b = document.getElementById('avB').value;
+            const ha = await sha256(a), hb = await sha256(b);
+            const elA = document.getElementById('avHashA'), elB = document.getElementById('avHashB');
+            elA.textContent = ha; elB.textContent = hb;
+            const diff = hexDiff(ha, hb), pct = Math.round(diff / 64 * 100);
+            elA.style.color = '#00e676';
+            elB.style.color = diff > 0 ? '#ff5252' : '#00e676';
+            document.getElementById('avDiff').textContent = diff === 0
+                ? '✓ Identical inputs → Identical hashes (deterministic)'
+                : '⚡ Avalanche: ' + diff + '/64 hex chars changed (' + pct + '%) — from just one character difference!';
+        }
+        document.getElementById('avA').addEventListener('input', updateAvalanche);
+        document.getElementById('avB').addEventListener('input', updateAvalanche);
+        updateAvalanche();
+
+        // ══════════════════════════════════════════════════════
+        // TREE VIZ (prereqs tab)
+        // ══════════════════════════════════════════════════════
+        function showTreeDepth(d) {
+            const cv = document.getElementById('treeVizCanvas'), ctx = cv.getContext('2d');
+            const W = cv.width, H = cv.height;
+            ctx.clearRect(0, 0, W, H);
+            const leaves = Math.pow(2, d);
+            function pos(lv, i) { return [(i + .5) / Math.pow(2, lv) * W, 24 + (lv / d) * (H - 48)]; }
+            // edges
+            for (let lv = 0; lv < d; lv++) {
+                const n = Math.pow(2, lv);
+                for (let i = 0; i < n; i++) {
+                    const [px, py] = pos(lv, i);
+                    [[i * 2], [i * 2 + 1]].forEach(([ci]) => {
+                        const [cx, cy] = pos(lv + 1, ci);
+                        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(cx, cy);
+                        ctx.strokeStyle = 'rgba(0,212,255,0.2)'; ctx.lineWidth = 1.5; ctx.stroke();
+                    });
+                }
+            }
+            // nodes
+            for (let lv = 0; lv <= d; lv++) {
+                const n = Math.pow(2, lv);
+                for (let i = 0; i < n; i++) {
+                    const [x, y] = pos(lv, i);
+                    const isRoot = lv === 0, isLeaf = lv === d;
+                    const r = isRoot ? 13 : isLeaf ? 7 : 10;
+                    const col = isRoot ? '#ffab40' : isLeaf ? '#00d4ff' : '#b388ff';
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fillStyle = col + '20'; ctx.fill();
+                    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+                }
+            }
+            document.getElementById('treeStats').textContent =
+                `Depth: ${d}  |  Leaves: ${leaves}  |  Internal nodes: ${leaves - 1}  |  Total nodes: ${2 * leaves - 1}  |  To verify any leaf: only ${d} hashes needed`;
+        }
+        showTreeDepth(2);
+
+        // ══════════════════════════════════════════════════════
+        // EXPLAINER CANVAS
+        // ══════════════════════════════════════════════════════
+        (async function () {
+            const cv = document.getElementById('explainerCanvas'), ctx = cv.getContext('2d');
+            const exData = ['Alice→Bob: 5 BTC', 'Bob→Carol: 3 BTC', 'Carol→Dave: 1 BTC', 'Dave→Eve: 2 BTC'];
+            let exTree = [];
+
+            async function build() {
+                let lvl = await Promise.all(exData.map(d => sha256(d)));
+                exTree = [lvl];
+                while (lvl.length > 1) {
+                    if (lvl.length % 2 === 1) lvl = [...lvl, lvl[lvl.length - 1]];
+                    const next = [];
+                    for (let i = 0; i < lvl.length; i += 2) next.push(await sha256(lvl[i] + lvl[i + 1]));
+                    exTree.push(next); lvl = next;
+                }
+            }
+
+            function getProof(idx) {
+                const proof = []; let i = idx;
+                for (let lv = 0; lv < exTree.length - 1; lv++) {
+                    const lvl = exTree[lv];
+                    proof.push({ hash: i % 2 === 0 ? (lvl[i + 1] || lvl[i]) : lvl[i - 1], dir: i % 2 === 0 ? 'right' : 'left' });
+                    i = Math.floor(i / 2);
+                }
+                return proof;
+            }
+
+            function draw(selLeaf = -1) {
+                const W = cv.offsetWidth; cv.width = W; cv.height = 280; ctx.clearRect(0, 0, W, 280);
+                if (!exTree.length) return;
+
+                const depth = exTree.length;
+                const proof = selLeaf >= 0 ? getProof(selLeaf) : [];
+                const proofSet = new Set(proof.map(p => p.hash));
+                const pathSet = new Set();
+                if (selLeaf >= 0) {
+                    let idx = selLeaf;
+                    for (let lv = 0; lv < depth; lv++) {
+                        if (exTree[lv]) pathSet.add(exTree[lv][Math.min(idx, exTree[lv].length - 1)]);
+                        idx = Math.floor(idx / 2);
+                    }
+                }
+
+                const gp = (tl, i) => {
+                    const n = exTree[tl] ? exTree[tl].length : exData.length;
+                    return [(i + .5) / n * W, 18 + (depth - 1 - tl) * (240 / depth) + 12];
+                };
+                const gRaw = (i) => [(i + .5) / exData.length * W, 18 + depth * (240 / depth) + 12];
+
+                // edges
+                for (let lv = 0; lv < depth - 1; lv++) {
+                    exTree[lv].forEach((h, i) => {
+                        const [cx, cy] = gp(lv, i), pi = Math.floor(i / 2), [px, py] = gp(lv + 1, pi);
+                        const isPath = pathSet.has(h) && pathSet.has(exTree[lv + 1]?.[pi]);
+                        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py);
+                        ctx.strokeStyle = isPath ? 'rgba(0,230,118,0.6)' : 'rgba(0,212,255,0.12)';
+                        ctx.lineWidth = isPath ? 2 : 1; ctx.stroke();
+                    });
+                }
+                exData.forEach((_, i) => {
+                    const [lx, ly] = gp(0, i), [rx, ry] = gRaw(i);
+                    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(rx, ry);
+                    ctx.strokeStyle = selLeaf === i ? 'rgba(255,255,255,0.25)' : 'rgba(0,212,255,0.08)';
+                    ctx.lineWidth = 1; ctx.stroke();
+                });
+
+                function rr(ctx, x, y, w, h, r) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+                }
+
+                function drawNode(x, y, label, baseCol, isProof, isSel, isPath) {
+                    const nw = Math.min(Math.max(label.length * 6.5 + 20, 70), W / 5), nh = 26;
+                    const col = isSel ? '#ffffff' : isProof ? '#00e676' : isPath ? '#00e676' : baseCol;
+                    rr(ctx, x - nw / 2, y - nh / 2, nw, nh, 5);
+                    ctx.fillStyle = col + '22'; ctx.fill();
+                    ctx.strokeStyle = col; ctx.lineWidth = isSel || isProof || isPath ? 2 : 1; ctx.stroke();
+                    ctx.fillStyle = col; ctx.font = `500 ${Math.min(10, Math.floor(nw / 8))}px 'JetBrains Mono'`;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, x, y);
+                }
+
+                for (let lv = depth - 1; lv >= 0; lv--) {
+                    exTree[lv].forEach((hash, i) => {
+                        const [x, y] = gp(lv, i);
+                        const isRoot = lv === depth - 1, isLeaf = lv === 0;
+                        const baseCol = isRoot ? '#ffab40' : isLeaf ? '#00d4ff' : '#b388ff';
+                        const isProof = proofSet.has(hash);
+                        const isPath = pathSet.has(hash);
+                        const isSel = isLeaf && i === selLeaf;
+                        drawNode(x, y, shortHash(hash), baseCol, isProof, isSel, isPath);
+                    });
+                }
+
+                // raw data row
+                exData.forEach((d, i) => {
+                    const [x, y] = gRaw(i), nw = Math.min(W / exData.length - 8, 120), nh = 24;
+                    rr(ctx, x - nw / 2, y - nh / 2, nw, nh, 4);
+                    ctx.fillStyle = selLeaf === i ? 'rgba(255,255,255,0.1)' : 'rgba(0,212,255,0.05)';
+                    ctx.fill();
+                    ctx.strokeStyle = selLeaf === i ? 'rgba(255,255,255,0.4)' : 'rgba(0,212,255,0.2)';
+                    ctx.lineWidth = 1; ctx.stroke();
+                    ctx.fillStyle = selLeaf === i ? '#ffffff' : '#3a5a7a';
+                    ctx.font = `9px 'JetBrains Mono'`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(d.split(':')[0], x, y);
+                });
+
+                // level labels
+                ctx.fillStyle = '#2a4a6a'; ctx.font = `9px 'JetBrains Mono'`; ctx.textAlign = 'left';
+                ['Root', 'Internal', 'Leaves', 'Raw Data'].forEach((l, i) => {
+                    const y = 18 + i * (240 / depth) + 12;
+                    ctx.fillText(l, 4, y + 4);
+                });
+            }
+
+            cv.addEventListener('click', e => {
+                const rect = cv.getBoundingClientRect();
+                const sx = cv.width / rect.width, sy = cv.height / rect.height;
+                const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
+                const n = exData.length, depth = exTree.length;
+                for (let i = 0; i < n; i++) {
+                    const [x, y] = [(i + .5) / n * cv.width, 18 + (depth - 1) * (240 / depth) + 12];
+                    if (Math.abs(mx - x) < 50 && Math.abs(my - y) < 20) {
+                        const proof = getProof(i);
+                        document.getElementById('proofExplainer').innerHTML =
+                            `Proof for leaf ${i + 1} — <strong style="color:var(--cyan)">"${exData[i]}"</strong>:<br>` +
+                            proof.map((p, j) => `Step ${j + 1}: Hash sibling <span style="color:var(--amber)">[${p.dir}]</span> → <span style="color:var(--green)">${shortHash(p.hash)}</span>`).join('<br>') +
+                            `<br><span style="color:var(--green)">→ Computed root matches known root ✓ — Inclusion proven!</span>`;
+                        draw(i); return;
+                    }
+                }
+                draw(-1);
+                document.getElementById('proofExplainer').textContent = 'Click a leaf (raw data row) to see its proof path highlighted.';
+            });
+
+            await build(); draw();
+            document.getElementById('proofExplainer').textContent = 'Click a transaction name in the bottom row to see its proof path.';
+            window.addEventListener('resize', () => draw());
+        })();
+
+        // ══════════════════════════════════════════════════════
+        // USE CASE ACCORDION
+        // ══════════════════════════════════════════════════════
+        function toggleUC(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        // ══════════════════════════════════════════════════════
+        // PLAYGROUND
+        // ══════════════════════════════════════════════════════
+        let pgLeaves = ['Alice → Bob: ₿5', 'Bob → Carol: ₿3', 'Carol → Dave: ₿1', 'Dave → Eve: ₿2'];
+        let pgTree = [], pgSelectedLeaf = -1, pgZoom = 1, pgPrevRoot = '', pgTimer;
+
+        function addLeaf() {
+            if (pgLeaves.length >= 16) return;
+            pgLeaves.push('Block ' + (pgLeaves.length + 1));
+            renderLeafInputs(); rebuildTree();
+        }
+
+        function removeLeaf(i) {
+            if (pgLeaves.length <= 1) return;
+            pgLeaves.splice(i, 1);
+            if (pgSelectedLeaf >= pgLeaves.length) pgSelectedLeaf = -1;
+            renderLeafInputs(); rebuildTree();
+        }
+
+        function resetLeaves() {
+            pgLeaves = ['Alice → Bob: ₿5', 'Bob → Carol: ₿3', 'Carol → Dave: ₿1', 'Dave → Eve: ₿2'];
+            pgSelectedLeaf = -1; pgPrevRoot = '';
+            renderLeafInputs(); rebuildTree();
+        }
+
+        function pgZoomIn() { pgZoom = Math.min(2, pgZoom + 0.2); drawPgTree(); }
+        function pgZoomOut() { pgZoom = Math.max(0.4, pgZoom - 0.2); drawPgTree(); }
+
+        function renderLeafInputs() {
+            const c = document.getElementById('leafInputs'); c.innerHTML = '';
+            pgLeaves.forEach((v, i) => {
+                const row = document.createElement('div'); row.className = 'leaf-row';
+                const safeV = v.replace(/"/g, '&quot;');
+                row.innerHTML = `<span class="leaf-num">${i + 1}</span>
+      <input class="leaf-input" value="${safeV}" data-idx="${i}" placeholder="Enter data..." spellcheck="false">
+      <button class="leaf-del" onclick="removeLeaf(${i})">×</button>`;
+                c.appendChild(row);
+                row.querySelector('input').addEventListener('input', e => {
+                    pgLeaves[i] = e.target.value;
+                    clearTimeout(pgTimer); pgTimer = setTimeout(rebuildTree, 180);
+                });
+            });
+        }
+
+        async function rebuildTree() {
+            if (!pgLeaves.length) return;
+            let lvl = await Promise.all(pgLeaves.map(d => sha256(d)));
+            pgTree = [lvl];
+            while (lvl.length > 1) {
+                if (lvl.length % 2 === 1) lvl = [...lvl, lvl[lvl.length - 1]];
+                const next = [];
+                for (let i = 0; i < lvl.length; i += 2) next.push(await sha256(lvl[i] + lvl[i + 1]));
+                pgTree.push(next); lvl = next;
+            }
+            const root = pgTree[pgTree.length - 1][0];
+            const rootEl = document.getElementById('rootHashDisplay');
+            rootEl.textContent = root;
+            if (pgPrevRoot && pgPrevRoot !== root) {
+                rootEl.style.color = 'var(--red)';
+                document.getElementById('tamperStatus').innerHTML =
+                    `<span class="status-dot dot-red"></span>Tamper detected! Root changed: ${shortHash(pgPrevRoot)} → <span style="color:var(--red)">${shortHash(root)}</span>`;
+                setTimeout(() => { rootEl.style.color = 'var(--amber)'; }, 1500);
+            } else if (!pgPrevRoot) {
+                document.getElementById('tamperStatus').innerHTML = `<span class="status-dot dot-green"></span>Tree intact. Root: ${shortHash(root)}`;
+            }
+            pgPrevRoot = root;
+            document.getElementById('rootStatus').innerHTML = `<span class="status-dot dot-green"></span>Computed from ${pgLeaves.length} leaf nodes`;
+            drawPgTree();
+            if (pgSelectedLeaf >= 0 && pgSelectedLeaf < pgLeaves.length) showPgProof(pgSelectedLeaf);
+        }
+
+        function getPgProof(idx) {
+            const proof = []; let i = idx;
+            for (let lv = 0; lv < pgTree.length - 1; lv++) {
+                const lvl = pgTree[lv];
+                proof.push({ hash: i % 2 === 0 ? (lvl[i + 1] || lvl[i]) : lvl[i - 1], dir: i % 2 === 0 ? 'right' : 'left' });
+                i = Math.floor(i / 2);
+            }
+            return proof;
+        }
+
+        function showPgProof(idx) {
+            pgSelectedLeaf = idx;
+            const proof = getPgProof(idx);
+            const leafHash = pgTree[0][idx];
+            const root = pgTree[pgTree.length - 1][0];
+            let html = `<div style="color:var(--cyan);margin-bottom:0.5rem;">Proof for leaf ${idx + 1}: <strong>"${pgLeaves[idx].substring(0, 25)}"</strong></div>`;
+            html += `<div style="margin-bottom:0.3rem;"><span style="color:var(--muted);width:5em;display:inline-block;">LEAF</span><span style="color:var(--green)">${shortHash(leafHash)}</span></div>`;
+            proof.forEach(p => {
+                html += `<div style="margin-bottom:0.3rem;"><span style="color:var(--amber);width:5em;display:inline-block;">[${p.dir.toUpperCase()}]</span><span style="color:var(--text)">${shortHash(p.hash)}</span></div>`;
+            });
+            html += `<div style="border-top:1px solid var(--border);margin-top:0.5rem;padding-top:0.5rem;color:var(--green);">→ ROOT: ${shortHash(root)} ✓</div>`;
+            html += `<div style="color:var(--muted);margin-top:0.3rem;font-size:0.68rem;">Proof: ${proof.length + 1} hashes × 32 bytes = ${(proof.length + 1) * 32} bytes total</div>`;
+            document.getElementById('proofOutput').innerHTML = html;
+            drawPgTree();
+        }
+
+        function drawPgTree() {
+            if (!pgTree.length) return;
+            const wrap = document.getElementById('pgCanvasWrap');
+            const cv = document.getElementById('pgCanvas'), ctx = cv.getContext('2d');
+            const tooltip = document.getElementById('pgTooltip');
+            const depth = pgTree.length;
+            const nw = Math.round(100 * pgZoom), nh = Math.round(30 * pgZoom), hg = Math.round(14 * pgZoom), vg = Math.round(56 * pgZoom);
+            const maxN = pgLeaves.length;
+            const totalW = Math.max(maxN * (nw + hg), wrap.offsetWidth - 4);
+            const totalH = (depth + 1) * (nh + vg) + 40;
+            cv.width = totalW; cv.height = totalH; ctx.clearRect(0, 0, totalW, totalH);
+
+            function gp(lv, i) {
+                const n = pgTree[lv].length, rowW = n * (nw + hg) - hg, sx = (totalW - rowW) / 2;
+                return [sx + i * (nw + hg) + nw / 2, 24 + (depth - 1 - lv) * (nh + vg) + nh / 2];
+            }
+
+            const proofSet = new Set(), pathSet = new Set();
+            if (pgSelectedLeaf >= 0 && pgSelectedLeaf < pgLeaves.length) {
+                getPgProof(pgSelectedLeaf).forEach(p => proofSet.add(p.hash));
+                let idx = pgSelectedLeaf;
+                for (let lv = 0; lv < pgTree.length; lv++) {
+                    if (pgTree[lv]) pathSet.add(pgTree[lv][Math.min(idx, pgTree[lv].length - 1)]);
+                    idx = Math.floor(idx / 2);
+                }
+            }
+
+            // edges
+            for (let lv = 0; lv < depth - 1; lv++) {
+                pgTree[lv].forEach((h, i) => {
+                    const [cx, cy] = gp(lv, i), pi = Math.floor(i / 2), [px, py] = gp(lv + 1, pi);
+                    const isPath = pathSet.has(h) && pathSet.has(pgTree[lv + 1]?.[pi]);
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py);
+                    ctx.strokeStyle = isPath ? 'rgba(0,230,118,0.6)' : 'rgba(0,212,255,0.1)';
+                    ctx.lineWidth = isPath ? 2 * pgZoom : pgZoom; ctx.stroke();
+                });
+            }
+
+            const hitAreas = [];
+            function rr2(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+            }
+
+            for (let lv = depth - 1; lv >= 0; lv--) {
+                pgTree[lv].forEach((hash, i) => {
+                    const [x, y] = gp(lv, i);
+                    const isRoot = lv === depth - 1, isLeaf = lv === 0;
+                    const baseCol = isRoot ? '#ffab40' : isLeaf ? '#00d4ff' : '#b388ff';
+                    const isProof = proofSet.has(hash), isPath = pathSet.has(hash), isSel = isLeaf && i === pgSelectedLeaf;
+                    const col = isSel ? '#ffffff' : isProof || isPath ? '#00e676' : baseCol;
+
+                    rr2(x - nw / 2, y - nh / 2, nw, nh, 5 * pgZoom);
+                    ctx.fillStyle = col + '22'; ctx.fill();
+                    ctx.strokeStyle = col; ctx.lineWidth = (isSel || isProof || isPath) ? 2 * pgZoom : pgZoom; ctx.stroke();
+                    ctx.fillStyle = col; ctx.font = `${Math.max(8, Math.round(9 * pgZoom))}px 'JetBrains Mono'`;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(shortHash(hash), x, y);
+
+                    if (isLeaf) hitAreas.push({ x: x - nw / 2, y: y - nh / 2, w: nw, h: nh, li: i, hash });
+                });
+            }
+
+            // raw data labels
+            const rawY = 24 + (depth) * (nh + vg);
+            pgLeaves.forEach((d, i) => {
+                const n = pgTree[0].length, rowW = n * (nw + hg) - hg, sx = (totalW - rowW) / 2;
+                const x = sx + i * (nw + hg) + nw / 2;
+                const [lx, ly] = gp(0, i);
+                ctx.beginPath(); ctx.moveTo(lx, ly + nh / 2); ctx.lineTo(x, rawY - 4);
+                ctx.strokeStyle = i === pgSelectedLeaf ? 'rgba(255,255,255,0.2)' : 'rgba(0,212,255,0.07)';
+                ctx.lineWidth = pgZoom; ctx.stroke();
+                const label = d.length > 14 ? d.slice(0, 13) + '…' : d;
+                ctx.fillStyle = i === pgSelectedLeaf ? '#ffffff' : '#3a5a7a';
+                ctx.font = `${Math.max(7, Math.round(8.5 * pgZoom))}px 'JetBrains Mono'`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(label, x, rawY);
+            });
+
+            cv.onclick = e => {
+                const rect = cv.getBoundingClientRect(), sx = cv.width / rect.width, sy = cv.height / rect.height;
+                const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
+                for (const h of hitAreas) {
+                    if (mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h) {
+                        showPgProof(h.li);
+                        document.getElementById('tamperStatus').innerHTML = `<span class="status-dot dot-amber"></span>Showing proof for leaf ${h.li + 1}`;
+                        return;
+                    }
+                }
+            };
+            cv.style.cursor = 'pointer';
+
+            cv.onmousemove = e => {
+                const rect = cv.getBoundingClientRect(), sx = cv.width / rect.width, sy = cv.height / rect.height;
+                const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
+                let found = false;
+                for (const h of hitAreas) {
+                    if (mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h) {
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (e.clientX - rect.left + 12) + 'px';
+                        tooltip.style.top = (e.clientY - rect.top + 12) + 'px';
+                        tooltip.innerHTML = `<div style="color:var(--cyan);margin-bottom:0.25rem;">Leaf ${h.li + 1}</div><div style="color:var(--muted);font-size:0.65rem;margin-bottom:0.25rem;">${pgLeaves[h.li]}</div><div>${h.hash}</div>`;
+                        found = true; break;
+                    }
+                }
+                if (!found) tooltip.style.display = 'none';
+            };
+            cv.onmouseleave = () => { tooltip.style.display = 'none'; };
+        }
+
+        // ══════════════════════════════════════════════════════
+        // INIT
+        // ══════════════════════════════════════════════════════
+        renderLeafInputs();
+        rebuildTree();
+    </script>
+</body>
+
+</html>

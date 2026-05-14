@@ -7,6 +7,7 @@ import Projects from "./components/Projects/Projects";
 import Contact from "./components/Contacts/Contact";
 import Footer from "./components/Footer/Footer";
 import WorkExperience from "./components/WorkExperience/WorkExperience";
+import Learning from "./components/Learning/Learning";
 import { Helmet } from "react-helmet";
 import "./App.css";
 
@@ -42,6 +43,7 @@ function App() {
         <Skills />
         <WorkExperience />
         <Projects />
+        <Learning />
         <Contact />
       </Container>
       <Footer />
