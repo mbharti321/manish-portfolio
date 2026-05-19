@@ -1,5 +1,7 @@
-import React from "react";
-import { Container, Typography, Grid, Card, CardContent, Box, Chip } from "@mui/material";
+import React, { useState } from "react";
+import { Container, Typography, Grid, Card, CardContent, Box, Chip, IconButton } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import "./Projects.css";
 
 const projects = [
@@ -79,6 +81,12 @@ const projects = [
 ];
 
 function Projects() {
+  const [expanded, setExpanded] = useState({});
+
+  const toggleExpanded = (index) => {
+    setExpanded((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
   return (
     <section id="projects">
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
@@ -122,7 +130,16 @@ function Projects() {
                   },
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: 3 }}>
+                <CardContent
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 3,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => toggleExpanded(index)}
+                >
                   {project.featured && (
                     <Typography
                       variant="caption"
@@ -137,28 +154,47 @@ function Projects() {
                       ⭐ Featured Project
                     </Typography>
                   )}
-                  <Typography
-                    variant={project.featured ? "h5" : "h6"}
-                    sx={{ fontWeight: 700, color: project.featured ? "#667eea" : "#1976d2", mb: 0.5 }}
-                  >
-                    {project.title}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#666", fontStyle: "italic", mb: 1.5 }}
-                  >
-                    {project.description}
-                  </Typography>
-                  
-                  <Box component="ul" sx={{ mt: 1, pl: 2, flexGrow: 1, mb: 2 }}>
-                    {project.bullets.map((bullet, idx) => (
-                      <li key={idx}>
-                        <Typography variant="body2" sx={{ mb: 0.8 }}>
-                          {bullet}
-                        </Typography>
-                      </li>
-                    ))}
+
+                  <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant={project.featured ? "h5" : "h6"}
+                        sx={{ fontWeight: 700, color: project.featured ? "#667eea" : "#1976d2", mb: 0.5 }}
+                      >
+                        {project.title}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#666", fontStyle: "italic", mb: 1.5 }}
+                      >
+                        {project.description}
+                      </Typography>
+                    </Box>
+
+                    <IconButton
+                      aria-label={expanded[index] ? "collapse" : "expand"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpanded(index);
+                      }}
+                      sx={{ alignSelf: "start" }}
+                    >
+                      {expanded[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </IconButton>
                   </Box>
+
+                  {expanded[index] && (
+                    <Box component="ul" sx={{ mt: 1, pl: 2, flexGrow: 1, mb: 2 }}>
+                      {project.bullets.map((bullet, idx) => (
+                        <li key={idx}>
+                          <Typography variant="body2" sx={{ mb: 0.8 }}>
+                            {bullet}
+                          </Typography>
+                        </li>
+                      ))}
+                    </Box>
+                  )}
 
                   <Typography
                     variant="caption"
