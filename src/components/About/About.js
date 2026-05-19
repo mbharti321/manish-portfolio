@@ -130,7 +130,7 @@ function About() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn more about me
+            More about me
           </Button>
         </Box>
       </Box>
