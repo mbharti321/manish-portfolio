@@ -27,7 +27,5 @@ jobs:
 
       - name: Deploy to Hostinger via FTP
         run: |
-          cd build
-          for file in $(find . -type f); do
-            curl -T "$file" --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} "ftp://${{ secrets.FTP_HOST }}/public_html/${file#./}"
-          done
+          sudo apt-get update && sudo apt-get install -y ncftp
+          ncftpput -R -v -u ${{ secrets.FTP_USERNAME }} -p ${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }} public_html ./build/*
