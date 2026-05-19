@@ -1,0 +1,119 @@
+#work-experience {
+    padding: 2rem 0;
+    background-color: #f7f8fa;
+    border-radius: 16px;
+    margin: 1rem 0;
+}
+
+#work-experience h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.experience {
+    background-color: #fff;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.experience h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.experience ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.experience li {
+    margin-bottom: 0.25rem;
+}
+
+.experience p {
+    margin-bottom: 0.5rem;
+}
+
+.experience strong {
+    font-weight: bold;
+}
+
+.workexp-title {
+    font-weight: 700 !important;
+    color: #1976d2 !important;
+}
+
+.workexp-grid-item {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+/* Highlight current AI Engineer role */
+.workexp-grid-item:nth-child(1) .workexp-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border: 2px solid #526ad7a9 ;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+    position: relative;
+}
+
+.workexp-grid-item:nth-child(1) .workexp-card::before {
+    content: "🔥 CURRENT";
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #526bd7;
+    background: rgba(76, 103, 222, 0.249);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.workexp-card {
+    border-radius: 1rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.workexp-role {
+    font-weight: 600 !important;
+    color: #1976d2 !important;
+}
+
+/* Highlight current role title */
+.workexp-grid-item:nth-child(1) .workexp-role {
+    color: #1b3fe3 !important;
+    font-weight: 700 !important;
+}
+
+.workexp-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.workexp-list {
+    padding-left: 1.2rem;
+    margin: 0;
+}
+
+.workexp-tech {
+    margin-top: 1.5rem !important;
+}
+
+@media (max-width: 600px) {
+    #work-experience {
+        padding: 1rem 0;
+    }
+    .workexp-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}

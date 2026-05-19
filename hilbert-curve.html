@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hilbert Curve — A Complete Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lora:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #07070b;
+            --surface: #0f0f18;
+            --surface2: #171724;
+            --border: #2a2a3d;
+            --text: #ddd6c4;
+            --text-dim: #7a7568;
+            --text-bright: #f0e8d0;
+            --gold: #c8993a;
+            --gold-light: #e8b84b;
+            --teal: #4ecdc4;
+            --coral: #e8614a;
+            --violet: #8b6fd4;
+            --green: #5dbd7a;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Lora', Georgia, serif;
+            font-size: 17px;
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        /* ─── NAVIGATION ─── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(7, 7, 11, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-dim);
+            text-decoration: none;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        /* ─── HERO ─── */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 56px;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.18;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 780px;
+            padding: 2rem;
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.2s forwards;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--text-bright);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.4s forwards;
+        }
+
+        h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            max-width: 580px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.6s forwards;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.8s forwards;
+        }
+
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.8rem 1.8rem;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: #0a0800;
+            border: 1px solid var(--gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-light);
+            border-color: var(--gold-light);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            animation: bob 2s ease-in-out infinite;
+            opacity: 0;
+            animation: fadeIn 1s 1.2s forwards, bob 2s 2s ease-in-out infinite;
+        }
+
+        /* ─── SECTIONS ─── */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .container-wide {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-bright);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+            color: var(--text);
+        }
+
+        strong {
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        em {
+            color: var(--gold-light);
+            font-style: italic;
+        }
+
+        /* ─── DIVIDERS & DECORATORS ─── */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 2rem;
+        }
+
+        .alt-bg {
+            background: var(--surface);
+        }
+
+        .alt-bg2 {
+            background: var(--surface2);
+        }
+
+        /* ─── FORMULA BOX ─── */
+        .formula-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 2;
+            color: var(--text-bright);
+            overflow-x: auto;
+        }
+
+        .formula-box .comment {
+            color: var(--text-dim);
+            font-style: italic;
+            font-family: 'Lora', serif;
+            font-size: 13px;
+        }
+
+        /* ─── CALLOUT ─── */
+        .callout {
+            background: rgba(200, 153, 58, 0.08);
+            border: 1px solid rgba(200, 153, 58, 0.25);
+            border-radius: 4px;
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .callout-teal {
+            background: rgba(78, 205, 196, 0.06);
+            border-color: rgba(78, 205, 196, 0.2);
+        }
+
+        .callout-coral {
+            background: rgba(232, 97, 74, 0.06);
+            border-color: rgba(232, 97, 74, 0.2);
+        }
+
+        /* ─── HISTORY TIMELINE ─── */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gold);
+            border: 2px solid var(--bg);
+            transform: translateX(-50%);
+            margin-left: 1px;
+        }
+
+        .timeline-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-bright);
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        /* ─── PROPERTY CARDS ─── */
+        .props-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .prop-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.8rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .prop-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        .prop-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .prop-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-bright);
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .prop-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* ─── USE CASE CARDS ─── */
+        .usecase-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .usecase-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2.5rem;
+            align-items: start;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .usecase-item:last-child {
+            border-bottom: none;
+        }
+
+        .usecase-canvas-wrap {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .usecase-domain {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .usecase-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--text-bright);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.2rem 0;
+        }
+
+        .ps-box {
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .ps-box.problem {
+            background: rgba(232, 97, 74, 0.07);
+            border: 1px solid rgba(232, 97, 74, 0.2);
+        }
+
+        .ps-box.solution {
+            background: rgba(93, 189, 122, 0.07);
+            border: 1px solid rgba(93, 189, 122, 0.2);
+        }
+
+        .ps-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .ps-box.problem .ps-label {
+            color: var(--coral);
+        }
+
+        .ps-box.solution .ps-label {
+            color: var(--green);
+        }
+
+        /* ─── MATH VISUALS ─── */
+        .math-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .step-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .step-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-canvas {
+            width: 100%;
+            aspect-ratio: 1;
+        }
+
+        /* ─── PSYCHOLOGY ─── */
+        .psych-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .psych-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .psych-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .psych-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--text-bright);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .psych-text {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        /* ─── PLAYGROUND ─── */
+        #playground {
+            background: var(--bg);
+            padding: 5rem 2rem;
+        }
+
+        .playground-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        #play-canvas-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #play-canvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1;
+            cursor: crosshair;
+        }
+
+        .play-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.8rem 1rem;
+            background: rgba(7, 7, 11, 0.85);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .coord-display {
+            color: var(--gold);
+        }
+
+        .controls-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .control-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .control-value {
+            float: right;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            outline: none;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.8rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .toggle-item:hover {
+            border-color: var(--gold);
+        }
+
+        .toggle-item.active {
+            border-color: var(--gold);
+            background: rgba(200, 153, 58, 0.06);
+        }
+
+        .toggle-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            width: 32px;
+            height: 18px;
+            background: var(--border);
+            border-radius: 10px;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        .toggle-switch.on {
+            background: var(--gold);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s;
+        }
+
+        .toggle-switch.on::after {
+            left: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .ctrl-btn.active {
+            background: var(--gold);
+            color: #0a0800;
+            border-color: var(--gold);
+        }
+
+        .info-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .info-key {
+            color: var(--text-dim);
+        }
+
+        .info-val {
+            color: var(--gold-light);
+        }
+
+        /* ─── ALGO SECTION ─── */
+        .algo-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .code-block {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.2rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.9;
+            overflow-x: auto;
+            color: var(--text);
+        }
+
+        .code-kw {
+            color: var(--violet);
+        }
+
+        .code-fn {
+            color: var(--teal);
+        }
+
+        .code-num {
+            color: var(--gold);
+        }
+
+        .code-cmt {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .code-str {
+            color: var(--coral);
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-curve {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bob {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(8px);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s, transform 0.7s;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .usecase-item {
+                grid-template-columns: 1fr;
+            }
+
+            .playground-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .algo-two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── LSYSTEM VIZ ─── */
+        .lsystem-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        .ls-rule {
+            color: var(--text);
+        }
+
+        .ls-sym {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .ls-arrow {
+            color: var(--text-dim);
+        }
+
+        .ls-exp {
+            color: var(--teal);
+        }
+
+        /* dimension badge */
+        .dim-badge {
+            display: inline-block;
+            background: rgba(200, 153, 58, 0.1);
+            border: 1px solid rgba(200, 153, 58, 0.3);
+            border-radius: 4px;
+            padding: 0.2rem 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--gold);
+            margin: 0 0.3rem;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:650px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+    <nav>
+        <div class="nav-logo">H I L B E R T · C U R V E</div>
+        <ul class="nav-links">
+            <li><a href="#intro">What is it</a></li>
+            <li><a href="#history">History</a></li>
+            <li><a href="#mathematics">Mathematics</a></li>
+            <li><a href="#properties">Properties</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="#psychology">Psychology</a></li>
+            <li><a href="#playground">Playground</a></li>
+        </ul>
+    </nav>
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <section id="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <div class="hero-tag">∞ · Space-Filling · Fractal · Locality-Preserving</div>
+            <h1>The <em>Hilbert</em> Curve</h1>
+            <p class="hero-desc">
+                A single continuous line that visits every point in a square.
+                A mathematical curiosity that powers your GPS, gene sequencing,
+                database engines, and computer graphics — all at once.
+            </p>
+            <div class="hero-ctas">
+                <a href="#intro" class="btn btn-primary">Explore the Curve</a>
+                <a href="#playground" class="btn btn-outline">Interactive Playground</a>
+            </div>
+        </div>
+        <div class="scroll-hint">↓ &nbsp; scroll to explore</div>
+    </section>
+
+    <!-- ═══════════════════ INTRODUCTION ═══════════════════ -->
+    <section id="intro" class="alt-bg">
+        <div class="container">
+            <div class="section-label">Introduction</div>
+            <h2>A line that fills all of space</h2>
+
+            <div class="two-col">
+                <div>
+                    <p>
+                        Imagine you're asked to draw a path through every point inside a square —
+                        not just a grid of points, but <strong>every single point</strong>, an uncountably infinite set
+                        —
+                        using one continuous line, without lifting your pen, without crossing itself.
+                    </p>
+                    <p>
+                        This sounds impossible. By classical intuition, a line is one-dimensional and a square
+                        is two-dimensional. How could a lower-dimensional object completely contain a higher one?
+                    </p>
+                    <p>
+                        In 1891, mathematician David Hilbert answered this question with a construction of
+                        breathtaking elegance. By iteratively replacing a simple U-shape with smaller versions
+                        of itself, he created a curve that — in the limit — <em>genuinely fills a two-dimensional
+                            square</em>.
+                    </p>
+                </div>
+                <div>
+                    <div class="callout">
+                        <strong>The Core Idea:</strong> At order 1, the curve is a simple U connecting 4 points.
+                        At order 2, each of the 4 segments is replaced by a smaller U, connecting 16 points.
+                        At order <em>n</em>, the curve visits 4ⁿ points. As <em>n → ∞</em>, it visits every point
+                        in the unit square — a true space-filling curve.
+                    </div>
+                    <p>
+                        What makes the Hilbert curve special among all space-filling curves is its
+                        <strong>exceptional locality</strong>: points that are close together along
+                        the one-dimensional path tend to be close together in two-dimensional space,
+                        and vice versa. This property makes it extraordinarily useful in computing.
+                    </p>
+                </div>
+            </div>
+
+            <div class="math-steps" id="order-steps"></div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ HISTORY ═══════════════════ -->
+    <section id="history">
+        <div class="container">
+            <div class="section-label">History</div>
+            <h2>From a paradox to a revolution</h2>
+
+            <div class="two-col">
+                <div>
+                    <p>
+                        The story of space-filling curves begins with a crisis in late 19th-century mathematics.
+                        Mathematicians had long assumed that dimension was a fundamental, inviolable property —
+                        that you couldn't map a line onto a plane in a continuous, meaningful way.
+                    </p>
+                    <p>
+                        Georg Cantor shattered this assumption in 1878, proving that the real number line and
+                        the plane have the same <em>cardinality</em> (the same "count" of points, in the sense of
+                        infinite sets). His bijection between the two, however, was wildly discontinuous — it
+                        tore the line apart and scattered its points across the plane without any coherent structure.
+                    </p>
+                    <p>
+                        The question then became: can this mapping be made <strong>continuous</strong>?
+                        Common intuition said no. Jordan curve theorems, dimension theory, and geometric
+                        reasoning all suggested that a continuous curve could not fill a 2D region.
+                    </p>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1878</div>
+                        <div class="timeline-title">Cantor's Correspondence</div>
+                        <p class="prop-desc">Georg Cantor proves a line and a square have the same number of points
+                            (equinumerosity), shocking the mathematical world. But his bijection was not continuous.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1890</div>
+                        <div class="timeline-title">Peano's First Curve</div>
+                        <p class="prop-desc">Giuseppe Peano constructs the first continuous surjective map from [0,1]
+                            onto [0,1]². He described it analytically, but left no picture. It immediately inspired
+                            Hilbert.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1891</div>
+                        <div class="timeline-title">Hilbert's Geometric Construction</div>
+                        <p class="prop-desc">David Hilbert publishes a simple, visual, geometric construction. With just
+                            four recursive rules and a picture at each stage, he made space-filling curves accessible
+                            and intuitive.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1904–1914</div>
+                        <div class="timeline-title">Theory Develops</div>
+                        <p class="prop-desc">Mathematicians prove dimension theory rigorously (Brouwer, Lebesgue).
+                            Despite Peano's curve, dimension is still well-defined — these curves are surjective but not
+                            injective (they self-intersect in the limit).</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1969–present</div>
+                        <div class="timeline-title">Computational Rebirth</div>
+                        <p class="prop-desc">Morton (1966) and others discover that space-filling curve orderings
+                            dramatically improve cache performance and spatial query efficiency. Hilbert's mathematical
+                            curiosity becomes an engineering workhorse.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ MATHEMATICS ═══════════════════ -->
+    <section id="mathematics" class="alt-bg">
+        <div class="container">
+            <div class="section-label">Mathematics</div>
+            <h2>The rigorous beauty underneath</h2>
+
+            <h3>1. Formal Definition</h3>
+            <p>
+                The Hilbert curve is defined as the limit of a sequence of piecewise-linear curves {H₁, H₂, H₃, …}.
+                Each Hₙ is a continuous, non-self-intersecting path through 4ⁿ points arranged in a 2ⁿ × 2ⁿ grid.
+            </p>
+
+            <div class="formula-box">
+                <span class="comment">// Each iteration is a continuous function:</span><br>
+                H<sub>n</sub> : [0, 1] → [0, 1]²<br><br>
+                <span class="comment">// The limit curve H is defined as:</span><br>
+                H = lim<sub>n→∞</sub> H<sub>n</sub><br><br>
+                <span class="comment">// This limit exists because the sequence is uniformly Cauchy.</span><br>
+                <span class="comment">// ‖H_{n+1}(t) − H_n(t)‖ ≤ √2 / 2ⁿ for all t ∈ [0,1]</span>
+            </div>
+
+            <p>
+                The key theorem: <strong>H is continuous, surjective, and measure-preserving.</strong>
+                It maps the unit interval [0,1] onto the entire unit square [0,1]², touching every
+                point (continuity + surjectivity), and it maps uniform probability on [0,1] to
+                uniform area measure on the square (measure-preservation).
+            </p>
+
+            <h3>2. Recursive Construction</h3>
+            <p>
+                The construction uses four orientations of a U-shaped connector. At each stage,
+                the square is divided into four quadrants, and the previous curve is placed in each
+                quadrant — sometimes rotated or reflected — and connected.
+            </p>
+
+            <div class="formula-box">
+                <span class="comment">// Recursive drawing function:</span><br>
+                hilbert(x, y, ax, ay, bx, by, order):<br>
+                &nbsp;&nbsp;<span class="comment">// ax,ay = x-axis vector bx,by = y-axis vector</span><br>
+                &nbsp;&nbsp;<span class="code-kw">if</span> order == 0:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;plot(x + (ax + bx)/2, y + (ay + by)/2)<br>
+                &nbsp;&nbsp;<span class="code-kw">else</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;hilbert(x, y, by/2, ay/2, bx/2, ay/2, order−1)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;hilbert(x+ax/2, y+ay/2, ax/2, ay/2, bx/2, by/2, order−1)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;hilbert(x+ax/2+bx/2, y+ay/2+by/2, ax/2, ay/2, bx/2, by/2, order−1)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;hilbert(x+ax/2+bx, y+ay/2+by, −by/2,−ay/2, −ax/2,−ay/2, order−1)
+            </div>
+
+            <h3>3. L-System Grammar</h3>
+            <p>
+                The Hilbert curve can be elegantly expressed as a Lindenmayer system (L-system),
+                a formal grammar that rewrites symbols according to production rules and then
+                interprets the final string as drawing instructions.
+            </p>
+
+            <div class="lsystem-box">
+                <div class="ls-rule"><span class="ls-sym">Axiom:</span> <span class="ls-exp">A</span></div>
+                <div class="ls-rule"><span class="ls-sym">A</span> <span class="ls-arrow">→</span> <span
+                        class="ls-exp">−BF+AFA+FB−</span></div>
+                <div class="ls-rule"><span class="ls-sym">B</span> <span class="ls-arrow">→</span> <span
+                        class="ls-exp">+AF−BFB−FA+</span></div>
+                <br>
+                <div style="color:var(--text-dim);font-size:12px">
+                    F = move forward &nbsp;|&nbsp; + = turn left 90° &nbsp;|&nbsp; − = turn right 90°<br>
+                    A, B = recursive sub-structures (no drawing action)
+                </div>
+            </div>
+
+            <p>
+                Applying these rules <em>n</em> times produces a string that, when interpreted by a
+                turtle graphics system, draws the order-<em>n</em> Hilbert curve exactly. This reveals
+                the deep <strong>self-similar</strong> structure: A and B are just rotated/reflected copies of each
+                other.
+            </p>
+
+            <h3>4. Coordinate Algorithms</h3>
+            <p>
+                The power of the Hilbert curve in computing comes from efficient algorithms to convert
+                between 1D position (distance along the curve) and 2D coordinates:
+            </p>
+
+            <div class="algo-two-col">
+                <div>
+                    <h4>d → (x, y) · Decode</h4>
+                    <div class="code-block">
+                        <span class="code-fn">function</span> d2xy(n, d) {<br>
+                        &nbsp;&nbsp;<span class="code-kw">let</span> x = 0, y = 0;<br>
+                        &nbsp;&nbsp;<span class="code-kw">let</span> rx, ry, t = d;<br>
+                        &nbsp;&nbsp;<span class="code-kw">for</span> (<span class="code-kw">let</span> s = <span
+                            class="code-num">1</span>; s &lt; n; s &lt;&lt;= <span class="code-num">1</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;rx = <span class="code-num">1</span> &amp; (t &gt;&gt; <span
+                            class="code-num">1</span>);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;ry = <span class="code-num">1</span> &amp; (t ^ rx);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">if</span> (ry === <span class="code-num">0</span>)
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">if</span> (rx === <span
+                            class="code-num">1</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x = s−<span class="code-num">1</span>−x;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y = s−<span class="code-num">1</span>−y;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x, y] = [y, x];<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;x += s * rx;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;y += s * ry;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;t &gt;&gt;= <span class="code-num">2</span>;<br>
+                        &nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;<span class="code-kw">return</span> [x, y];<br>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <h4>(x, y) → d · Encode</h4>
+                    <div class="code-block">
+                        <span class="code-fn">function</span> xy2d(n, x, y) {<br>
+                        &nbsp;&nbsp;<span class="code-kw">let</span> d = <span class="code-num">0</span>, rx, ry;<br>
+                        &nbsp;&nbsp;<span class="code-kw">for</span> (<span class="code-kw">let</span> s =
+                        n&gt;&gt;<span class="code-num">1</span>; s &gt; <span class="code-num">0</span>; s &gt;&gt;=
+                        <span class="code-num">1</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;rx = (x &amp; s) &gt; <span class="code-num">0</span> ? <span
+                            class="code-num">1</span> : <span class="code-num">0</span>;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;ry = (y &amp; s) &gt; <span class="code-num">0</span> ? <span
+                            class="code-num">1</span> : <span class="code-num">0</span>;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;d += s * s * ((<span class="code-num">3</span> * rx) ^ ry);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-cmt">// rotate quadrant</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">if</span> (ry === <span class="code-num">0</span>)
+                        {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-kw">if</span> (rx === <span
+                            class="code-num">1</span>) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x = s−<span class="code-num">1</span>−x;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y = s−<span class="code-num">1</span>−y;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x, y] = [y, x];<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;<span class="code-kw">return</span> d;<br>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <p>
+                Both algorithms run in <strong>O(log n)</strong> time where n = 2<sup>order</sup>.
+                The bit-manipulation approach makes them extraordinarily fast on modern hardware —
+                a single CPU instruction can often handle the rotation step.
+            </p>
+
+            <h3>5. Fractal Dimension</h3>
+            <p>
+                The Hilbert curve is a fractal. Its Hausdorff (fractal) dimension is exactly
+                <span class="dim-badge">D = 2</span>, equal to the dimension of the plane it fills.
+                This is computed by the scaling relationship:
+            </p>
+
+            <div class="formula-box">
+                D = log(N) / log(r) &nbsp;&nbsp;<span class="comment">// where N = number of self-similar copies, r =
+                    scaling factor</span><br><br>
+                At each step: N = <span style="color:var(--gold)">4</span> copies, each scaled by r = <span
+                    style="color:var(--gold)">2</span><br>
+                D = log(4) / log(2) = 2 / 1 = <span style="color:var(--gold-light)">2</span> ✓<br><br>
+                <span class="comment">// Unlike a regular curve (D = 1), the Hilbert curve's infinite
+                    complexity</span><br>
+                <span class="comment">// collapses its dimension up to 2 — matching the 2D space it inhabits.</span>
+            </div>
+
+            <h3>6. Locality Property</h3>
+            <p>
+                The most important computational property: <strong>points that are nearby in 1D
+                    are likely to be nearby in 2D</strong>, and nearby 2D points tend to map to
+                nearby 1D positions.
+            </p>
+
+            <div class="callout callout-teal">
+                <strong>Formal locality:</strong> For any two points p, q on the Hilbert curve
+                with |H⁻¹(p) − H⁻¹(q)| ≤ ε (nearby on the curve), the maximum possible
+                |p − q| in 2D is bounded. The Hilbert curve achieves the best possible
+                locality among all space-filling curves — it minimizes the worst-case
+                2D distance for nearby 1D positions.
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ PROPERTIES ═══════════════════ -->
+    <section id="properties">
+        <div class="container">
+            <div class="section-label">Key Properties</div>
+            <h2>What makes it extraordinary</h2>
+
+            <div class="props-grid">
+                <div class="prop-card">
+                    <div class="prop-icon">∞</div>
+                    <div class="prop-name">Space-Filling</div>
+                    <div class="prop-desc">In the limit (n→∞), the curve passes through every single point in the unit
+                        square. It is surjective: the image of H equals [0,1]².</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">〰</div>
+                    <div class="prop-name">Continuity</div>
+                    <div class="prop-desc">H is uniformly continuous — small changes in the 1D parameter t produce small
+                        changes in 2D position. No jumps, no teleportation.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">🔁</div>
+                    <div class="prop-name">Self-Similarity</div>
+                    <div class="prop-desc">Each quarter of the Hilbert curve is a scaled, rotated/reflected copy of the
+                        whole curve. This fractal property makes it recursively constructable.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">📐</div>
+                    <div class="prop-name">Measure-Preserving</div>
+                    <div class="prop-desc">Uniform measure on [0,1] maps to uniform Lebesgue measure on [0,1]². Every
+                        subregion of the square gets a proportional share of the curve.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">📍</div>
+                    <div class="prop-name">Locality-Optimal</div>
+                    <div class="prop-desc">Among all space-filling curves, the Hilbert curve achieves the best possible
+                        locality — minimizing the worst-case spatial distance between nearby points on the curve.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">🔀</div>
+                    <div class="prop-name">Not Injective</div>
+                    <div class="prop-desc">H is not one-to-one — it "touches" boundary points multiple times. Every
+                        point inside the square has exactly one preimage; boundary points can have up to 3.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">📈</div>
+                    <div class="prop-name">Infinite Length</div>
+                    <div class="prop-desc">The length of Hₙ is (4ⁿ − 1)/3^(n−1) → ∞. The limit curve has infinite
+                        one-dimensional length, consistent with filling a 2D area.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-icon">🔢</div>
+                    <div class="prop-name">Nowhere Differentiable</div>
+                    <div class="prop-desc">Like most fractals, the Hilbert curve has no tangent anywhere — it changes
+                        direction infinitely often, making it nowhere differentiable.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ APPLICATIONS ═══════════════════ -->
+    <section id="applications" class="alt-bg">
+        <div class="container-wide" style="max-width:1100px;margin:0 auto">
+            <div class="section-label">Applications</div>
+            <h2>How it solves real problems</h2>
+            <p style="max-width:660px;margin-bottom:2.5rem">
+                The Hilbert curve is not an abstract curiosity. Its locality-preserving property
+                translates directly into measurable performance improvements across an extraordinary
+                range of fields. Here's how it works in each domain.
+            </p>
+
+            <div class="usecase-list">
+
+                <!-- SPATIAL DATABASES -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="database" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Computer Science</div>
+                        <div class="usecase-name">Spatial Database Indexing</div>
+                        <p>
+                            Modern spatial databases must answer queries like "find all restaurants within 5 km
+                            of this GPS coordinate." Storing rows by latitude/longitude separately means a range
+                            query touches vast swaths of unrelated data. You need a way to assign each 2D location
+                            a single 1D key that preserves spatial relationships.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                A naïve row scan to find all points inside a bounding box on a billion-row table
+                                would take hours. Simple Morton (Z-order) codes work but have clustering artifacts
+                                at quadrant boundaries.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Encode each (lat, lon) as a Hilbert index. Sort rows by this index. Now a spatial
+                                range query becomes a small number of contiguous 1D range scans — typically
+                                <strong>10–30× faster</strong> than alternatives. PostgreSQL, Google BigQuery,
+                                and Apache Parquet all offer Hilbert-based spatial indexing.
+                            </div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-dim)">
+                            <strong style="color:var(--text)">Why Hilbert beats Z-order:</strong> Z-order curves
+                            have "jumps" at quadrant boundaries — two nearby points can have very different Z-codes.
+                            The Hilbert curve, by always connecting the four sub-quadrants in a U-shape, eliminates
+                            these pathological boundary cases and maintains better average locality.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- IMAGE COMPRESSION -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="image" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Image Processing & Graphics</div>
+                        <div class="usecase-name">Image Compression & Texture Mapping</div>
+                        <p>
+                            JPEG compression divides images into 8×8 pixel blocks and applies DCT transforms.
+                            But the order in which pixels are encoded within each block, and how blocks are
+                            stored in memory, dramatically affects compression ratios and cache performance.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                Raster scan order (left-to-right, top-to-bottom) has poor locality for 2D image
+                                data. When a GPU renders a texture, a diagonal line of pixels causes constant
+                                cache misses because nearby screen pixels are far apart in memory.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Hilbert-ordering pixels ensures spatially adjacent pixels are also adjacent in
+                                memory. Modern GPU texture atlases use Hilbert-like Morton/Hilbert tiling to
+                                achieve near-optimal cache hit rates. Game engines see <strong>20–40% speedups</strong>
+                                in texture sampling for complex scenes.
+                            </div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-dim)">
+                            <strong style="color:var(--text)">Dithering:</strong> Hilbert-curve dithering for
+                            error diffusion (reducing a full-color image to fewer colors) produces visually
+                            superior results to raster-scan dithering because errors are spread in a
+                            space-filling pattern rather than in scanlines.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- GENOMICS -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="genomics" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Bioinformatics & Genomics</div>
+                        <div class="usecase-name">Hi-C Genome Folding & Sequence Visualization</div>
+                        <p>
+                            The human genome is 3 billion base pairs long — but it's not a straight line.
+                            DNA folds into complex 3D structures inside the cell nucleus, and understanding
+                            these folding patterns (chromatin organization) is critical for understanding
+                            gene regulation and disease.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                Hi-C experiments produce massive contact matrices: a 3Gb × 3Gb matrix of
+                                interaction frequencies between all pairs of genomic loci. Visualizing,
+                                storing, and querying this data is computationally intractable with
+                                conventional methods.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Map genomic position to a Hilbert curve index. The 1D genome sequence
+                                naturally embeds into 2D Hilbert space, revealing chromosomal territories,
+                                topologically associating domains (TADs), and A/B compartments. Tools
+                                like <strong>HiGlass</strong> use Hilbert-indexed tile pyramids for
+                                interactive genome browsing at any scale.
+                            </div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-dim)">
+                            <strong style="color:var(--text)">Bonus:</strong> Hilbert curve genome visualization
+                            also enables comparison of two genomes — syntenic regions (conserved blocks) appear
+                            as diagonal stripes, intuitively revealing evolutionary relationships.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CACHE OPTIMIZATION -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="cache" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Computer Architecture</div>
+                        <div class="usecase-name">Cache-Oblivious Matrix Algorithms</div>
+                        <p>
+                            Matrix multiplication is one of the most performance-critical operations in
+                            computing — it underlies all neural networks, scientific simulations, and
+                            graphics. The naive triple-loop algorithm is limited by memory bandwidth,
+                            not CPU speed.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                Row-major storage of matrices causes cache thrashing during multiplication:
+                                multiplying an M×K matrix by a K×N matrix accesses one matrix by rows and
+                                the other by columns — one access pattern is always cache-hostile.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Hilbert-curve matrix layout stores matrix elements so that any 2D subregion
+                                is contiguous in memory. Cache-oblivious algorithms recurse on submatrices —
+                                the Hilbert layout ensures each sub-problem fits optimally in cache.
+                                This achieves <strong>O(n³ / B√M)</strong> cache complexity (optimal)
+                                vs O(n³ / B) for naive layouts.
+                            </div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-dim)">
+                            Libraries like BLAS/LAPACK, NumPy, and PyTorch use tiled matrix layouts
+                            inspired by space-filling curves to achieve near-peak memory bandwidth utilization.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NETWORKING / IP -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="network" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Networking & Internet Infrastructure</div>
+                        <div class="usecase-name">IPv4/IPv6 Address Space Visualization</div>
+                        <p>
+                            The IPv4 address space contains 2³² ≈ 4.3 billion addresses. Understanding
+                            which address ranges belong to which countries, ISPs, and organizations
+                            is essential for network security, routing policy, and internet governance.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                A linear address space plotted linearly shows nothing useful. IP address
+                                allocations are hierarchical and clustered, but a 1D plot makes geographic
+                                and topological clustering invisible.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Map the 2³² IPv4 address space onto a 65536×65536 Hilbert curve grid.
+                                <strong>CAIDA's internet mapping project</strong> uses this to visualize
+                                global IP allocation — /8 blocks appear as coherent 2D regions, and
+                                geographically co-located addresses cluster visually. BGP routing anomalies
+                                become instantly visible as spatial outliers.
+                            </div>
+                        </div>
+                        <p style="font-size:0.9rem;color:var(--text-dim)">
+                            The same technique works for IPv6 (2¹²⁸ addresses). Hilbert visualization
+                            is now standard in network security dashboards for detecting DDoS attacks,
+                            port scans, and botnets — anomalous traffic shows up as unexpected spatial clusters.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- N-BODY PHYSICS -->
+                <div class="usecase-item reveal">
+                    <div class="usecase-canvas-wrap">
+                        <canvas class="uc-canvas" data-type="physics" width="320" height="320"></canvas>
+                    </div>
+                    <div>
+                        <div class="usecase-domain">Scientific Computing</div>
+                        <div class="usecase-name">N-Body Simulations & Domain Decomposition</div>
+                        <p>
+                            Simulating the gravitational interactions of millions of particles (stars in
+                            a galaxy, atoms in a protein, fluid vortices) is one of the most
+                            computationally intensive tasks in science. These simulations must be
+                            parallelized across thousands of CPU cores.
+                        </p>
+                        <div class="problem-solution">
+                            <div class="ps-box problem">
+                                <div class="ps-label">The Problem</div>
+                                Distributing particles across processors naïvely (by coordinate ranges)
+                                creates severe load imbalance — denser regions overwhelm some processors
+                                while others sit idle. Communication between processors for nearby particles
+                                creates bandwidth bottlenecks.
+                            </div>
+                            <div class="ps-box solution">
+                                <div class="ps-label">Hilbert's Solution</div>
+                                Sort all particles by their Hilbert index, then assign contiguous segments
+                                to processors. This guarantees each processor gets spatially cohesive regions
+                                (minimizing communication) and can be load-balanced by adjusting segment lengths.
+                                The GADGET cosmological simulation code uses this for galaxy formation at
+                                supercomputer scale.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ PSYCHOLOGY ═══════════════════ -->
+    <section id="psychology">
+        <div class="container">
+            <div class="section-label">Psychology & Perception</div>
+            <h2>Why the brain loves this curve</h2>
+            <p style="max-width:660px">
+                The Hilbert curve's appeal isn't purely intellectual. Humans respond to it on a
+                deep perceptual and aesthetic level — and science is beginning to understand why.
+            </p>
+
+            <div class="psych-grid">
+                <div class="psych-card reveal">
+                    <div class="psych-number">01</div>
+                    <div class="psych-title">The Fractal Preference</div>
+                    <div class="psych-text">
+                        Psychologist Richard Taylor's studies showed humans consistently prefer fractal patterns
+                        with dimension D ≈ 1.3–1.5 — the range found in coastlines, trees, and clouds.
+                        But Hilbert curves (D=2) still fascinate us, perhaps because we perceive each
+                        finite iteration (D close to 1.5) rather than the limit. Eye-tracking studies show
+                        viewers explore Hilbert curves in smooth, guided sweeps — the path provides a
+                        natural visual scaffold.
+                    </div>
+                </div>
+                <div class="psych-card reveal">
+                    <div class="psych-number">02</div>
+                    <div class="psych-title">Predictable Complexity</div>
+                    <div class="psych-text">
+                        The brain seeks patterns. Pure randomness is stressful; pure order is boring.
+                        Fractal structures hit a sweet spot: locally complex, globally structured.
+                        The Hilbert curve is maximally complex (space-filling) yet obeys strict rules
+                        at every scale. This creates what psychologists call <em>aesthetic pleasure from
+                            pattern recognition</em> — the "aha" moment when the recursive rule clicks.
+                    </div>
+                </div>
+                <div class="psych-card reveal">
+                    <div class="psych-number">03</div>
+                    <div class="psych-title">Gestalt Completeness</div>
+                    <div class="psych-text">
+                        Gestalt psychology describes our drive to perceive wholes. The Hilbert curve
+                        satisfies this powerfully: the finite approximations feel "complete" (they fill
+                        a square perfectly), while simultaneously implying infinite detail. This triggers
+                        the closure principle — we perceive a finished, bounded, satisfying form even
+                        though the underlying mathematical object is infinite.
+                    </div>
+                </div>
+                <div class="psych-card reveal">
+                    <div class="psych-number">04</div>
+                    <div class="psych-title">Scale Invariance & Awe</div>
+                    <div class="psych-text">
+                        Psychologist Dacher Keltner's research on awe shows it's triggered by vastness
+                        and things that exceed existing mental schemas. The Hilbert curve triggers mild awe:
+                        zoom in, and you see the same structure repeating forever. This self-similarity
+                        echoes natural phenomena (fern fronds, river deltas, bronchi) that evolution
+                        has primed us to find meaningful and navigable.
+                    </div>
+                </div>
+                <div class="psych-card reveal">
+                    <div class="psych-number">05</div>
+                    <div class="psych-title">Data Visualization Advantage</div>
+                    <div class="psych-text">
+                        When complex multi-dimensional data is mapped onto a Hilbert curve and then colored,
+                        the human visual system can identify clusters, outliers, and gradients far faster
+                        than with tabular or scatter displays. Studies of genome browsers show scientists
+                        detect structural variants up to 3× faster when chromosomal contacts are
+                        Hilbert-displayed versus traditional heatmaps. Our brains are spatial processors —
+                        the Hilbert curve gives spatial structure to non-spatial data.
+                    </div>
+                </div>
+                <div class="psych-card reveal">
+                    <div class="psych-number">06</div>
+                    <div class="psych-title">Mathematical Beauty</div>
+                    <div class="psych-text">
+                        Semir Zeki's neuroaesthetics research shows that understanding a beautiful mathematical
+                        proof activates the same medial orbito-frontal cortex region as experiencing beautiful
+                        music or art. The Hilbert curve combines visual beauty with intellectual elegance —
+                        a simple 4-case recursive rule produces infinite complexity. This double satisfaction
+                        (sensory + intellectual) makes it one of the most beloved objects in mathematics.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════ PLAYGROUND ═══════════════════ -->
+    <section id="playground" class="alt-bg2">
+        <div class="container-wide" style="max-width:1100px;margin:0 auto">
+            <div class="section-label">Interactive Playground</div>
+            <h2>Play with the curve</h2>
+            <p style="max-width:600px;margin-bottom:2rem">
+                Explore the Hilbert curve yourself. Adjust the order, toggle color modes,
+                animate the drawing, and hover over the curve to see the 1D → 2D mapping in real time.
+            </p>
+
+            <div class="playground-layout">
+                <div>
+                    <div id="play-canvas-wrap">
+                        <canvas id="play-canvas" width="800" height="800"></canvas>
+                        <div class="play-overlay">
+                            <span id="coord-1d" class="coord-display">Hover to probe</span>
+                            <span id="coord-2d" style="color:var(--teal)"></span>
+                            <span id="coord-pct" style="color:var(--text-dim)"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <label class="control-label">
+                            Order
+                            <span class="control-value" id="order-display">4</span>
+                        </label>
+                        <input type="range" id="order-slider" min="1" max="8" value="4" step="1">
+                        <div style="display:flex;justify-content:space-between;margin-top:0.3rem">
+                            <span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--text-dim)">n=1
+                                · 4pts</span>
+                            <span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--text-dim)">n=8
+                                · 65536pts</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Line Width <span class="control-value"
+                                id="width-display">1.5</span></label>
+                        <input type="range" id="width-slider" min="0.5" max="6" value="1.5" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Color Mode</label>
+                        <div class="btn-group" id="color-mode-btns">
+                            <button class="ctrl-btn active" data-mode="gradient">Gradient</button>
+                            <button class="ctrl-btn" data-mode="solid">Solid</button>
+                            <button class="ctrl-btn" data-mode="heat">Heatmap</button>
+                            <button class="ctrl-btn" data-mode="rainbow">Rainbow</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Options</label>
+                        <div class="toggle-group">
+                            <div class="toggle-item" id="toggle-grid">
+                                <span class="toggle-name">Show Grid</span>
+                                <div class="toggle-switch" id="sw-grid"></div>
+                            </div>
+                            <div class="toggle-item active" id="toggle-dots">
+                                <span class="toggle-name">Show Endpoints</span>
+                                <div class="toggle-switch on" id="sw-dots"></div>
+                            </div>
+                            <div class="toggle-item" id="toggle-anim">
+                                <span class="toggle-name">Animate Drawing</span>
+                                <div class="toggle-switch" id="sw-anim"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Animation Speed <span class="control-value"
+                                id="speed-display">50%</span></label>
+                        <input type="range" id="speed-slider" min="1" max="100" value="50" step="1">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Actions</label>
+                        <div class="btn-group">
+                            <button class="ctrl-btn" id="btn-redraw">↺ Redraw</button>
+                            <button class="ctrl-btn" id="btn-replay">▶ Replay</button>
+                            <button class="ctrl-btn" id="btn-export">↓ Export</button>
+                        </div>
+                    </div>
+
+                    <div class="info-box" id="curve-info">
+                        <div><span class="info-key">Order: </span><span class="info-val" id="info-order">4</span></div>
+                        <div><span class="info-key">Grid: </span><span class="info-val" id="info-grid">16 × 16</span>
+                        </div>
+                        <div><span class="info-key">Points: </span><span class="info-val" id="info-pts">256</span></div>
+                        <div><span class="info-key">Segments: </span><span class="info-val" id="info-segs">255</span>
+                        </div>
+                        <div><span class="info-key">Fractal D: </span><span class="info-val">2.000</span></div>
+                        <div><span class="info-key">Length: </span><span class="info-val" id="info-len">—</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ FURTHER READING ═══════════════════ -->
+    <section>
+        <div class="container">
+            <div class="section-label">Go Deeper</div>
+            <h2>Further exploration</h2>
+            <div class="props-grid">
+                <div class="prop-card">
+                    <div class="prop-name">📖 Original Paper</div>
+                    <div class="prop-desc">David Hilbert, "Über die stetige Abbildung einer Linie auf ein Flächenstück"
+                        (1891). Mathematische Annalen, vol. 38, pp. 459–460.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-name">📚 Fractal Geometry</div>
+                    <div class="prop-desc">Mandelbrot's "The Fractal Geometry of Nature" (1982) places space-filling
+                        curves in the broader context of fractal mathematics and natural forms.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-name">💻 Algorithms in Practice</div>
+                    <div class="prop-desc">Hamilton's "Compact Hilbert Indices" (2006) extends the algorithm to
+                        arbitrary dimensions — used in geospatial systems handling 3D/4D data.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-name">🧬 Genomics Applications</div>
+                    <div class="prop-desc">Naumova et al., "Organization of the Mitotic Chromosome" (Science, 2013) —
+                        groundbreaking use of Hi-C + Hilbert visualization to reveal chromosome structure.</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-name">🧠 Neuroaesthetics</div>
+                    <div class="prop-desc">Zeki et al., "The experience of mathematical beauty and its neural
+                        correlates" (Frontiers in Human Neuroscience, 2014).</div>
+                </div>
+                <div class="prop-card">
+                    <div class="prop-name">🗄️ Database Systems</div>
+                    <div class="prop-desc">Nishimura et al., "Hilbert curve partitioning in BigQuery" — Google's
+                        engineering blog on spatial data at petabyte scale using Hilbert indexing.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer>
+        <div class="footer-curve">H(t) : [0,1] → [0,1]²</div>
+        <p style="color:var(--text-dim);font-size:0.85rem;max-width:500px;margin:0 auto 1.5rem">
+            The Hilbert Curve — bridging pure mathematics and applied computing since 1891.
+        </p>
+        <ul class="footer-links">
+            <li><a href="#hero">Back to Top</a></li>
+            <li><a href="#mathematics">Mathematics</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="#playground">Playground</a></li>
+        </ul>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+    <script>
+        // ─── HILBERT ALGORITHM ───────────────────────────────────────
+        function d2xy(n, d) {
+            let x = 0, y = 0;
+            let rx, ry, t = d;
+            for (let s = 1; s < n; s <<= 1) {
+                rx = 1 & (t >> 1);
+                ry = 1 & (t ^ rx);
+                if (ry === 0) {
+                    if (rx === 1) { x = s - 1 - x; y = s - 1 - y; }
+                    let tmp = x; x = y; y = tmp;
+                }
+                x += s * rx;
+                y += s * ry;
+                t >>= 2;
+            }
+            return [x, y];
+        }
+
+        function xy2d(n, x, y) {
+            let d = 0, rx, ry;
+            for (let s = n >> 1; s > 0; s >>= 1) {
+                rx = (x & s) > 0 ? 1 : 0;
+                ry = (y & s) > 0 ? 1 : 0;
+                d += s * s * ((3 * rx) ^ ry);
+                if (ry === 0) {
+                    if (rx === 1) { x = s - 1 - x; y = s - 1 - y; }
+                    let tmp = x; x = y; y = tmp;
+                }
+            }
+            return d;
+        }
+
+        function getHilbertPoints(order, size) {
+            const n = 1 << order; // 2^order
+            const total = n * n;
+            const pts = new Float32Array(total * 2);
+            const cellSize = size / n;
+            for (let i = 0; i < total; i++) {
+                const [x, y] = d2xy(n, i);
+                pts[i * 2] = x * cellSize + cellSize / 2;
+                pts[i * 2 + 1] = y * cellSize + cellSize / 2;
+            }
+            return pts;
+        }
+
+        // ─── COLOR HELPERS ────────────────────────────────────────────
+        function hsl(h, s, l) {
+            return `hsl(${h},${s}%,${l}%)`;
+        }
+
+        function lerpColor(t, mode) {
+            switch (mode) {
+                case 'gradient':
+                    // teal → gold
+                    const r = Math.round(78 + (200 - 78) * t);
+                    const g = Math.round(205 + (153 - 205) * t);
+                    const b = Math.round(196 + (58 - 196) * t);
+                    return `rgb(${r},${g},${b})`;
+                case 'heat':
+                    // black → red → orange → yellow → white
+                    if (t < 0.33) return `rgb(${Math.round(t * 3 * 200)},0,0)`;
+                    if (t < 0.66) return `rgb(200,${Math.round((t - 0.33) * 3 * 200)},0)`;
+                    return `rgb(200,200,${Math.round((t - 0.66) * 3 * 255)})`;
+                case 'rainbow':
+                    return `hsl(${Math.round(t * 300)}, 85%, 55%)`;
+                case 'solid':
+                default:
+                    return '#c8993a';
+            }
+        }
+
+        // ─── HERO ANIMATION ──────────────────────────────────────────
+        (function () {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, pts, animFrame = 0, raf;
+            const ORDER = 5;
+
+            function resize() {
+                W = canvas.offsetWidth; H = canvas.offsetHeight;
+                canvas.width = W; canvas.height = H;
+                const size = Math.min(W, H) * 0.95;
+                const off = (Math.min(W, H) - size) / 2;
+                const rawPts = getHilbertPoints(ORDER, size);
+                const n = 1 << ORDER;
+                pts = [];
+                for (let i = 0; i < rawPts.length / 2; i++) {
+                    pts.push([
+                        rawPts[i * 2] + (W - size) / 2,
+                        rawPts[i * 2 + 1] + (H - size) / 2
+                    ]);
+                }
+                animFrame = 0;
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                const total = pts.length;
+                const maxDraw = Math.min(total, animFrame);
+                if (maxDraw < 2) { animFrame++; raf = requestAnimationFrame(draw); return; }
+
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                for (let i = 1; i < maxDraw; i++) {
+                    const t = i / total;
+                    ctx.strokeStyle = lerpColor(t, 'gradient');
+                    ctx.beginPath();
+                    ctx.moveTo(pts[i - 1][0], pts[i - 1][1]);
+                    ctx.lineTo(pts[i][0], pts[i][1]);
+                    ctx.stroke();
+                }
+
+                if (animFrame < total + 60) {
+                    animFrame += 6;
+                } else {
+                    // restart after pause
+                    setTimeout(() => { animFrame = 0; }, 2000);
+                }
+                raf = requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', () => { resize(); });
+            resize(); draw();
+        })();
+
+        // ─── ORDER STEP THUMBNAILS ────────────────────────────────────
+        (function () {
+            const container = document.getElementById('order-steps');
+            for (let order = 1; order <= 5; order++) {
+                const card = document.createElement('div');
+                card.className = 'step-card';
+                const label = document.createElement('div');
+                label.className = 'step-label';
+                const n = 1 << order;
+                label.textContent = `Order ${order} · ${n}×${n}`;
+                const canvas = document.createElement('canvas');
+                canvas.className = 'step-canvas';
+                canvas.width = 160; canvas.height = 160;
+                card.appendChild(label);
+                card.appendChild(canvas);
+                container.appendChild(card);
+
+                // draw
+                const ctx = canvas.getContext('2d');
+                const size = 148;
+                const off = 6;
+                const pts = getHilbertPoints(order, size);
+                const total = pts.length / 2;
+                ctx.lineWidth = 1.2;
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                for (let i = 1; i < total; i++) {
+                    const t = i / total;
+                    ctx.strokeStyle = lerpColor(t, 'gradient');
+                    ctx.beginPath();
+                    ctx.moveTo(pts[(i - 1) * 2] + off, pts[(i - 1) * 2 + 1] + off);
+                    ctx.lineTo(pts[i * 2] + off, pts[i * 2 + 1] + off);
+                    ctx.stroke();
+                }
+            }
+        })();
+
+        // ─── USE CASE CANVASES ───────────────────────────────────────
+        (function () {
+            document.querySelectorAll('.uc-canvas').forEach(canvas => {
+                const type = canvas.dataset.type;
+                const ctx = canvas.getContext('2d');
+                const W = 320, H = 320;
+
+                if (type === 'database') {
+                    // Show Hilbert indexing with colored regions
+                    const order = 4;
+                    const n = 1 << order;
+                    const size = 290;
+                    const off = 15;
+                    const pts = getHilbertPoints(order, size);
+                    const total = pts.length / 2;
+                    // draw colored cells
+                    const cellSize = size / n;
+                    for (let i = 0; i < total; i++) {
+                        const [gx, gy] = d2xy(n, i);
+                        const t = i / total;
+                        ctx.fillStyle = lerpColor(t, 'gradient') + '60';
+                        ctx.fillRect(gx * cellSize + off, gy * cellSize + off, cellSize, cellSize);
+                    }
+                    // draw curve
+                    ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                    for (let i = 1; i < total; i++) {
+                        const t = i / total;
+                        ctx.strokeStyle = lerpColor(t, 'gradient');
+                        ctx.beginPath();
+                        ctx.moveTo(pts[(i - 1) * 2] + off, pts[(i - 1) * 2 + 1] + off);
+                        ctx.lineTo(pts[i * 2] + off, pts[i * 2 + 1] + off);
+                        ctx.stroke();
+                    }
+                    // draw a query rectangle
+                    ctx.strokeStyle = '#e8614a'; ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 2]);
+                    ctx.strokeRect(off + cellSize * 4, off + cellSize * 4, cellSize * 5, cellSize * 5);
+                    ctx.setLineDash([]);
+                    ctx.font = '10px JetBrains Mono';
+                    ctx.fillStyle = '#e8614a';
+                    ctx.fillText('spatial query', off + cellSize * 4 + 2, off + cellSize * 4 - 4);
+                }
+
+                else if (type === 'image') {
+                    // Show pixelated image with Hilbert scan
+                    const order = 3;
+                    const n = 1 << order;
+                    const size = 290; const off = 15;
+                    const cellSize = size / n;
+                    // draw gradient image pixels
+                    for (let x = 0; x < n; x++) {
+                        for (let y = 0; y < n; y++) {
+                            const gr = Math.round(30 + (y / n) * 180 + Math.sin(x) * 30);
+                            const gg = Math.round(50 + (x / n) * 120);
+                            const gb = Math.round(80 + Math.sin(y) * 60);
+                            ctx.fillStyle = `rgb(${gr},${gg},${gb})`;
+                            ctx.fillRect(off + x * cellSize, off + y * cellSize, cellSize, cellSize);
+                        }
+                    }
+                    // draw Hilbert scan on top
+                    const pts = getHilbertPoints(order, size);
+                    const total = pts.length / 2;
+                    ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                    ctx.beginPath();
+                    ctx.moveTo(pts[0] + off, pts[1] + off);
+                    for (let i = 1; i < total; i++) {
+                        ctx.lineTo(pts[i * 2] + off, pts[i * 2 + 1] + off);
+                    }
+                    ctx.stroke();
+                    ctx.font = '9px JetBrains Mono';
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fillText('Hilbert scan path', off + 4, off + 12);
+                }
+
+                else if (type === 'genomics') {
+                    // Simulate Hi-C matrix with Hilbert curve overlay
+                    const sz = 290; const off = 15;
+                    // draw contact matrix
+                    const bins = 32;
+                    const binSz = sz / bins;
+                    for (let i = 0; i < bins; i++) {
+                        for (let j = 0; j < bins; j++) {
+                            const dist = Math.abs(i - j);
+                            const val = Math.exp(-dist * 0.15) * 0.8 + Math.random() * 0.1;
+                            const g = Math.round(val * 180);
+                            const r = Math.round(val * 220);
+                            ctx.fillStyle = `rgb(${r},${g},${Math.round(val * 40)})`;
+                            ctx.fillRect(off + i * binSz, off + j * binSz, binSz, binSz);
+                        }
+                    }
+                    // TADs
+                    ctx.strokeStyle = 'rgba(78,205,196,0.8)'; ctx.lineWidth = 1.5;
+                    ctx.setLineDash([3, 2]);
+                    [[0, 12], [12, 22], [22, 32]].forEach(([a, b]) => {
+                        ctx.strokeRect(off + a * binSz, off + a * binSz, (b - a) * binSz, (b - a) * binSz);
+                    });
+                    ctx.setLineDash([]);
+                    ctx.font = '9px JetBrains Mono';
+                    ctx.fillStyle = '#4ecdc4';
+                    ctx.fillText('TAD', off + 2, off + 10);
+                }
+
+                else if (type === 'cache') {
+                    // Show matrix layout comparison
+                    const order = 3; const n = 1 << order;
+                    const size = 290; const off = 15;
+                    const cellSize = size / n;
+                    const pts = getHilbertPoints(order, size);
+                    const total = pts.length / 2;
+                    // Color cells by Hilbert order
+                    for (let i = 0; i < total; i++) {
+                        const [gx, gy] = d2xy(n, i);
+                        const t = i / total;
+                        ctx.fillStyle = lerpColor(t, 'rainbow') + 'aa';
+                        ctx.fillRect(off + gx * cellSize, off + gy * cellSize, cellSize - 1, cellSize - 1);
+                        ctx.font = `${Math.max(7, cellSize * 0.35)}px JetBrains Mono`;
+                        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                        ctx.fillText(i, off + gx * cellSize + 2, off + gy * cellSize + cellSize * 0.6);
+                    }
+                    // outline
+                    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 0.5;
+                    for (let x = 0; x <= n; x++) {
+                        ctx.beginPath(); ctx.moveTo(off + x * cellSize, off); ctx.lineTo(off + x * cellSize, off + size); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(off, off + x * cellSize); ctx.lineTo(off + size, off + x * cellSize); ctx.stroke();
+                    }
+                }
+
+                else if (type === 'network') {
+                    // IPv4 space Hilbert visualization simulation
+                    const order = 4; const n = 1 << order;
+                    const size = 290; const off = 15;
+                    const cellSize = size / n;
+                    const total = n * n;
+                    const regions = [
+                        { start: 0, end: 40, color: '#4ecdc4cc' },
+                        { start: 40, end: 80, color: '#c8993acc' },
+                        { start: 80, end: 128, color: '#8b6fd4cc' },
+                        { start: 128, end: 180, color: '#e8614acc' },
+                        { start: 180, end: 220, color: '#5dbd7acc' },
+                        { start: 220, end: 256, color: '#4a90d9cc' },
+                    ];
+                    for (let i = 0; i < total; i++) {
+                        const [gx, gy] = d2xy(n, i);
+                        const region = regions.find(r => i >= r.start && i < r.end);
+                        ctx.fillStyle = region ? region.color : '#33334455';
+                        ctx.fillRect(off + gx * cellSize, off + gy * cellSize, cellSize - 0.5, cellSize - 0.5);
+                    }
+                    ctx.font = '9px JetBrains Mono';
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                    ctx.fillText('IPv4 /8 Blocks (simulated)', off + 2, H - 4);
+                }
+
+                else if (type === 'physics') {
+                    // Particle simulation with Hilbert decomposition
+                    const order = 3; const n = 1 << order;
+                    const size = 290; const off = 15;
+                    const cellSize = size / n;
+                    // Draw domain cells
+                    const colors = ['#4ecdc422', '#c8993a22', '#8b6fd422', '#e8614a22', '#5dbd7a22', '#4a90d922', '#e8b84b22', '#7a7568ee'];
+                    for (let i = 0; i < n * n; i++) {
+                        const [gx, gy] = d2xy(n, i);
+                        ctx.fillStyle = colors[i % colors.length];
+                        ctx.fillRect(off + gx * cellSize, off + gy * cellSize, cellSize, cellSize);
+                    }
+                    // Draw random "particles" clustered spatially
+                    const seed = 42;
+                    for (let i = 0; i < 180; i++) {
+                        const angle = i * 2.39996;
+                        const r = Math.sqrt(i / 180) * 100;
+                        const px = Math.sin(angle) * r + W / 2;
+                        const py = Math.cos(angle) * r + H / 2;
+                        const gx = Math.floor((px - off) / cellSize);
+                        const gy = Math.floor((py - off) / cellSize);
+                        if (gx < 0 || gy < 0 || gx >= n || gy >= n) continue;
+                        const proc = xy2d(n, Math.min(gx, n - 1), Math.min(gy, n - 1)) % colors.length;
+                        ctx.fillStyle = colors[proc].replace('22', 'dd');
+                        ctx.beginPath();
+                        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    // Draw Hilbert curve outline
+                    const pts = getHilbertPoints(order, size);
+                    const total2 = pts.length / 2;
+                    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(pts[0] + off, pts[1] + off);
+                    for (let i = 1; i < total2; i++) ctx.lineTo(pts[i * 2] + off, pts[i * 2 + 1] + off);
+                    ctx.stroke();
+                }
+            });
+        })();
+
+        // ─── PLAYGROUND ──────────────────────────────────────────────
+        (function () {
+            const canvas = document.getElementById('play-canvas');
+            const ctx = canvas.getContext('2d');
+            let W = 800, H = 800;
+
+            let state = {
+                order: 4,
+                lineWidth: 1.5,
+                colorMode: 'gradient',
+                showGrid: false,
+                showDots: true,
+                animate: false,
+                speed: 50,
+                animFrame: 0,
+                raf: null,
+                pts: null,
+                playing: false
+            };
+
+            function updateInfo() {
+                const order = state.order;
+                const n = 1 << order;
+                const total = n * n;
+                document.getElementById('order-display').textContent = order;
+                document.getElementById('info-order').textContent = order;
+                document.getElementById('info-grid').textContent = `${n} × ${n}`;
+                document.getElementById('info-pts').textContent = total.toLocaleString();
+                document.getElementById('info-segs').textContent = (total - 1).toLocaleString();
+                const cellSize = W / n;
+                const segLen = cellSize;
+                const totalLen = (total - 1) * segLen;
+                document.getElementById('info-len').textContent = `${totalLen.toFixed(0)} px`;
+            }
+
+            function buildPoints() {
+                state.pts = getHilbertPoints(state.order, W - 4);
+                // offset by 2px padding
+                for (let i = 0; i < state.pts.length; i += 2) {
+                    state.pts[i] += 2; state.pts[i + 1] += 2;
+                }
+            }
+
+            function drawGrid() {
+                const n = 1 << state.order;
+                const cellSize = W / n;
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i <= n; i++) {
+                    ctx.beginPath(); ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, H); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, i * cellSize); ctx.lineTo(W, i * cellSize); ctx.stroke();
+                }
+            }
+
+            function drawCurve(upTo) {
+                const pts = state.pts;
+                const total = pts.length / 2;
+                const limit = upTo !== undefined ? upTo : total;
+                if (limit < 2) return;
+
+                ctx.lineWidth = state.lineWidth;
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+                if (state.colorMode === 'solid') {
+                    ctx.strokeStyle = '#c8993a';
+                    ctx.beginPath();
+                    ctx.moveTo(pts[0], pts[1]);
+                    for (let i = 1; i < limit; i++) ctx.lineTo(pts[i * 2], pts[i * 2 + 1]);
+                    ctx.stroke();
+                } else {
+                    for (let i = 1; i < limit; i++) {
+                        const t = i / total;
+                        ctx.strokeStyle = lerpColor(t, state.colorMode);
+                        ctx.beginPath();
+                        ctx.moveTo(pts[(i - 1) * 2], pts[(i - 1) * 2 + 1]);
+                        ctx.lineTo(pts[i * 2], pts[i * 2 + 1]);
+                        ctx.stroke();
+                    }
+                }
+
+                if (state.showDots && limit === total) {
+                    // start point
+                    ctx.fillStyle = '#5dbd7a';
+                    ctx.beginPath(); ctx.arc(pts[0], pts[1], 4, 0, Math.PI * 2); ctx.fill();
+                    // end point
+                    ctx.fillStyle = '#e8614a';
+                    ctx.beginPath(); ctx.arc(pts[(total - 1) * 2], pts[(total - 1) * 2 + 1], 4, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+
+            function fullDraw() {
+                ctx.clearRect(0, 0, W, H);
+                if (state.showGrid) drawGrid();
+                drawCurve();
+            }
+
+            function animateDraw() {
+                if (!state.playing) return;
+                const total = state.pts.length / 2;
+                ctx.clearRect(0, 0, W, H);
+                if (state.showGrid) drawGrid();
+                drawCurve(state.animFrame);
+
+                const speed = Math.max(1, Math.round(state.speed / 10));
+                state.animFrame = Math.min(total, state.animFrame + speed);
+
+                if (state.animFrame < total) {
+                    state.raf = requestAnimationFrame(animateDraw);
+                } else {
+                    state.playing = false;
+                }
+            }
+
+            function redraw() {
+                cancelAnimationFrame(state.raf);
+                state.playing = false;
+                buildPoints();
+                updateInfo();
+                if (state.animate) {
+                    state.animFrame = 0;
+                    state.playing = true;
+                    animateDraw();
+                } else {
+                    fullDraw();
+                }
+            }
+
+            // Controls
+            const orderSlider = document.getElementById('order-slider');
+            orderSlider.addEventListener('input', () => {
+                state.order = parseInt(orderSlider.value);
+                redraw();
+            });
+
+            const widthSlider = document.getElementById('width-slider');
+            widthSlider.addEventListener('input', () => {
+                state.lineWidth = parseFloat(widthSlider.value);
+                document.getElementById('width-display').textContent = widthSlider.value;
+                if (!state.playing) fullDraw();
+            });
+
+            const speedSlider = document.getElementById('speed-slider');
+            speedSlider.addEventListener('input', () => {
+                state.speed = parseInt(speedSlider.value);
+                document.getElementById('speed-display').textContent = speedSlider.value + '%';
+            });
+
+            document.querySelectorAll('#color-mode-btns .ctrl-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#color-mode-btns .ctrl-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.colorMode = btn.dataset.mode;
+                    if (!state.playing) fullDraw();
+                });
+            });
+
+            function setupToggle(id, swId, key) {
+                const item = document.getElementById(id);
+                const sw = document.getElementById(swId);
+                item.addEventListener('click', () => {
+                    state[key] = !state[key];
+                    item.classList.toggle('active', state[key]);
+                    sw.classList.toggle('on', state[key]);
+                    if (!state.playing) fullDraw();
+                });
+            }
+            setupToggle('toggle-grid', 'sw-grid', 'showGrid');
+            setupToggle('toggle-dots', 'sw-dots', 'showDots');
+            setupToggle('toggle-anim', 'sw-anim', 'animate');
+
+            document.getElementById('btn-redraw').addEventListener('click', redraw);
+
+            document.getElementById('btn-replay').addEventListener('click', () => {
+                cancelAnimationFrame(state.raf);
+                state.animate = true;
+                document.getElementById('sw-anim').classList.add('on');
+                document.getElementById('toggle-anim').classList.add('active');
+                buildPoints();
+                state.animFrame = 0;
+                state.playing = true;
+                animateDraw();
+            });
+
+            document.getElementById('btn-export').addEventListener('click', () => {
+                fullDraw();
+                const link = document.createElement('a');
+                link.download = `hilbert-order${state.order}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+
+            // Hover probe
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX;
+                const my = (e.clientY - rect.top) * scaleY;
+                const n = 1 << state.order;
+                const cellSize = W / n;
+                const gx = Math.floor(mx / cellSize);
+                const gy = Math.floor(my / cellSize);
+                if (gx < 0 || gy < 0 || gx >= n || gy >= n) return;
+                const d = xy2d(n, gx, gy);
+                const total = n * n;
+                const pct = (d / total * 100).toFixed(1);
+                document.getElementById('coord-1d').textContent = `1D: ${d.toLocaleString()}`;
+                document.getElementById('coord-2d').textContent = `2D: (${gx}, ${gy})`;
+                document.getElementById('coord-pct').textContent = `${pct}% along curve`;
+
+                // highlight cell
+                if (!state.playing) {
+                    fullDraw();
+                    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+                    ctx.fillRect(gx * cellSize, gy * cellSize, cellSize, cellSize);
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(gx * cellSize, gy * cellSize, cellSize, cellSize);
+                }
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                document.getElementById('coord-1d').textContent = 'Hover to probe';
+                document.getElementById('coord-2d').textContent = '';
+                document.getElementById('coord-pct').textContent = '';
+                if (!state.playing) fullDraw();
+            });
+
+            // Init
+            redraw();
+        })();
+
+        // ─── SCROLL REVEAL ───────────────────────────────────────────
+        (function () {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+        })();
+    </script>
+</body>
+
+</html>

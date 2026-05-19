@@ -1,0 +1,32 @@
+name: Build and Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React app
+        run: npm run build
+
+      - name: Deploy to Hostinger via FTP
+        run: |
+          sudo apt-get update && sudo apt-get install -y ncftp
+          cd build
+          ncftpput -R -v -u ${{ secrets.FTP_USERNAME }} -p ${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }} . .
