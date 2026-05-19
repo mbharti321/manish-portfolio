@@ -110,7 +110,7 @@ function About() {
           </div>
           <Typography variant="body1" className="about-description">
             {/* <div className="about-location">📍 Bengaluru, India </div> */}
-            Hi, I'm Manish Bharti — an AI Engineer with 4+ years of experience
+            Hi, I'm Manish Bharti, an AI Engineer with 4+ years of experience
             building scalable backend systems and GenAI solutions. I specialize
             in Python, FastAPI, .NET, SQL, and Azure cloud. I've delivered
             production-grade systems including Agentic AI chatbots, RAG
