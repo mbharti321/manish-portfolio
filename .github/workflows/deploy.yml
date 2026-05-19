@@ -27,5 +27,7 @@ jobs:
 
       - name: Deploy to Hostinger via FTP
         run: |
-          apt-get update && apt-get install -y lftp
-          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_HOST }}; mirror -R ./build/ ./public_html/; quit"
+          cd build
+          for file in $(find . -type f); do
+            curl -T "$file" --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} "ftp://${{ secrets.FTP_HOST }}/public_html/${file#./}"
+          done
