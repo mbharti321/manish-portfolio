@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -6,7 +6,10 @@ import {
   Card,
   CardContent,
   Box,
+  Button,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import "./WorkExperience.css";
 
 const experiences = [
@@ -74,6 +77,15 @@ const experiences = [
 ];
 
 function WorkExperience() {
+  const [expanded, setExpanded] = useState({});
+
+  const toggleExpanded = (index) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
   return (
     <section id="work-experience">
       <Container maxWidth="lg">
@@ -114,12 +126,26 @@ function WorkExperience() {
                     </Typography>
                   </Box>
                   <Box component="ul" className="workexp-list">
-                    {experience.details.map((detail, idx) => (
-                      <li key={idx}>
-                        <Typography variant="body2">{detail}</Typography>
-                      </li>
-                    ))}
+                    {experience.details
+                      .slice(0, expanded[index] ? experience.details.length : 2)
+                      .map((detail, idx) => (
+                        <li key={idx}>
+                          <Typography variant="body2">{detail}</Typography>
+                        </li>
+                      ))}
                   </Box>
+                  {experience.details.length > 2 && (
+                    <Button
+                      onClick={() => toggleExpanded(index)}
+                      className="workexp-toggle-btn"
+                      size="small"
+                      endIcon={
+                        expanded[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                      }
+                    >
+                      {expanded[index] ? "Show Less" : "Show More"}
+                    </Button>
+                  )}
                   <Typography
                     variant="body2"
                     color="textSecondary"

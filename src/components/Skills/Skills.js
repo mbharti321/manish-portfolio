@@ -74,14 +74,9 @@ function Skills() {
         </Typography>
         <Grid container spacing={3} className="skills-grid">
           {Object.entries(skills).map(([category, skillList], index) => (
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              md={4}
+            <div 
               key={index} 
               className="skills-grid-item"
-              sx={{ display: "flex" }}
             >
               <Card 
                 className="skill-category"
@@ -136,7 +131,7 @@ function Skills() {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </div>
           ))}
         </Grid>
       </Container>
