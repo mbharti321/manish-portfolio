@@ -140,7 +140,7 @@ function Projects() {
                   }}
                   onClick={() => toggleExpanded(index)}
                 >
-                  {project.featured && (
+                  {/* {project.featured && (
                     <Typography
                       variant="caption"
                       sx={{
@@ -153,7 +153,7 @@ function Projects() {
                     >
                       ⭐ Featured Project
                     </Typography>
-                  )}
+                  )} */}
 
                   <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
                     <Box sx={{ flex: 1 }}>
