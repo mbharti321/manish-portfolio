@@ -42,7 +42,7 @@ function Contact() {
                   />
                 </Box> */}
                 <Box className="contact-info-list">
-                  <Typography variant="body1" className="contact-info-item">
+                  <Typography variant="body1" component="div" className="contact-info-item">
                     <div className="contact-info-label">
                       <EmailIcon className="contact-info-icon" />
                       <strong>Email:</strong>
@@ -55,7 +55,7 @@ function Contact() {
                       manishbharti.work@gmail.com
                     </Link>
                   </Typography>
-                  <Typography variant="body1" className="contact-info-item">
+                  <Typography variant="body1" component="div" className="contact-info-item">
                     <div className="contact-info-label">
                       <LinkedInIcon className="contact-info-icon" />
                       <strong>LinkedIn:</strong>
@@ -70,7 +70,7 @@ function Contact() {
                       linkedin.com/in/manish-bharti
                     </Link>
                   </Typography>
-                  <Typography variant="body1" className="contact-info-item">
+                  <Typography variant="body1" component="div" className="contact-info-item">
                     <div className="contact-info-label">
                       <GitHubIcon className="contact-info-icon" />
                       <strong>GitHub:</strong>

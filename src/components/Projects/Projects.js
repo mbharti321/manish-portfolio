@@ -99,13 +99,7 @@ function Projects() {
         </Typography>
         <Grid container spacing={3} className="projects-grid">
           {projects.map((project, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={project.featured ? 12 : 6}
-              key={index}
-              sx={{ display: "flex" }}
-            >
+            <div key={index} style={{ display: "flex" }}>
               <Card
                 className={`project-card ${project.featured ? "featured" : ""}`}
                 sx={{
@@ -232,7 +226,7 @@ function Projects() {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </div>
           ))}
         </Grid>
       </Container>

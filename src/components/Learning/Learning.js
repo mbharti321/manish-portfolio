@@ -57,7 +57,7 @@ function Learning() {
         </Typography>
         <Grid container spacing={2} className="learn-grid">
           {demos.map((demo) => (
-            <Grid item xs={12} sm={6} key={demo.key}>
+            <div key={demo.key}>
               <Card
                 className={`learn-card ${active === demo.key ? "active" : ""}`}
               >
@@ -106,7 +106,7 @@ function Learning() {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </div>
           ))}
         </Grid>
 

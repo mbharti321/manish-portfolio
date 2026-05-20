@@ -99,12 +99,7 @@ function WorkExperience() {
         </Typography>
         <Grid container spacing={3}>
           {experiences.map((experience, index) => (
-            <Grid
-              item
-              xs={12}
-              key={index}
-              className="workexp-grid-item"
-            >
+            <div key={index} className="workexp-grid-item">
               <Card className="workexp-card">
                 <CardContent
                   sx={{ display: "flex", flexDirection: "column", p: 2.5, cursor: "pointer" }}
@@ -166,7 +161,7 @@ function WorkExperience() {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </div>
           ))}
         </Grid>
       </Container>
