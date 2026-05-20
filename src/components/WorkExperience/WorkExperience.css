@@ -79,6 +79,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    color: #334155; /* softer card text color */
 }
 
 .workexp-role {
@@ -108,6 +109,7 @@
 
 .workexp-tech {
     margin-top: 0.75rem !important;
+    color: #475569 !important;
 }
 
 .workexp-toggle-btn {
