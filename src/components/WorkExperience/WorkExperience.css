@@ -79,6 +79,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    color: #334155; /* softer card text color */
 }
 
 .workexp-role {
@@ -96,16 +97,19 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    /* align-items: center; */
+    /* margin-bottom: 0.5rem; */
 }
 
 .workexp-list {
     padding-left: 1.2rem;
     margin: 0;
+    margin-top: 0.5rem;
 }
 
 .workexp-tech {
-    margin-top: 1.5rem !important;
+    margin-top: 0.75rem !important;
+    color: #475569 !important;
 }
 
 .workexp-toggle-btn {

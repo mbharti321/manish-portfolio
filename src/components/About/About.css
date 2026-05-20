@@ -35,7 +35,7 @@
     background: white;
     border-radius: 20px;
     padding: 2rem 2.5rem;
-    box-shadow: 0 20px 40px rgba(14, 11, 11, 0.714);
+    box-shadow: 0 20px 40px rgba(14, 11, 11, 0.08);
     text-align: center;
     width: 100%;
     max-width: 850px;
@@ -70,13 +70,13 @@
 .about-name {
     font-weight: 700 !important;
     font-size: 2.2rem !important;
-    color: #000000 !important;
+    color: #0b2540 !important; /* dark navy instead of pure black */
     margin-bottom: 0.5rem !important;
     line-height: 1.2 !important;
 }
 
 .about-role {
-    color: #000000 !important;
+    color: #334155 !important; /* softer dark gray */
     font-weight: 400 !important;
     margin-bottom: 1rem !important;
     font-size: 1.1rem !important;
@@ -85,7 +85,7 @@
 .about-divider {
     width: 40px;
     height: 2px;
-    background-color: #212b32;
+    background-color: #cbd5e1; /* subtle divider */
     margin: 0 auto 1.5rem auto;
 }
 
@@ -98,8 +98,8 @@
 }
 
 .social-icon {
-    color: #162222 !important;
-    background: #38424c35 !important;
+    color: #334155 !important;
+    background: rgba(51,65,85,0.06) !important;
     border-radius: 50% !important;
     width: 40px !important;
     height: 40px !important;
@@ -116,7 +116,7 @@
 
 .about-tagline {
     font-style: italic !important;
-    color: #000000 !important;
+    color: #334155 !important;
     margin-bottom: 0.5rem !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
@@ -130,7 +130,7 @@
 }
 
 .about-description {
-    color: #000000 !important;
+    color: #334155 !important;
     line-height: 1.6 !important;
     margin-bottom: 1.5rem !important;
     text-align: justify !important;
@@ -138,7 +138,7 @@
 }
 
 .about-research {
-    color: #060e0e !important;
+    color: #334155 !important;
     margin-bottom: 1rem !important;
     font-size: 1rem !important;
 }

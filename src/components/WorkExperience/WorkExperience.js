@@ -7,6 +7,7 @@ import {
   CardContent,
   Box,
   Button,
+  IconButton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -98,64 +99,69 @@ function WorkExperience() {
         </Typography>
         <Grid container spacing={3}>
           {experiences.map((experience, index) => (
-            <Grid
-              item
-              xs={12}
-              key={index}
-              className="workexp-grid-item"
-            >
+            <div key={index} className="workexp-grid-item">
               <Card className="workexp-card">
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    className="workexp-role"
-                  >
-                    {experience.title}
-                  </Typography>
-                  <Box className="workexp-row">
-                    <Typography variant="subtitle1" color="textSecondary">
-                      {experience.company}
-                    </Typography>
-                    <Typography
-                      variant="subtitle2"
-                      color="textSecondary"
-                      gutterBottom
+                <CardContent
+                  sx={{ display: "flex", flexDirection: "column", p: 2.5, cursor: "pointer" }}
+                  onClick={() => toggleExpanded(index)}
+                >
+                  <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        className="workexp-role"
+                      >
+                        {experience.title}
+                      </Typography>
+                      <Box className="workexp-row">
+                        <Typography variant="subtitle1" color="textSecondary">
+                          {experience.company}
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          color="rgb(0 0 0 / 40%)"
+                          gutterBottom
+                        >
+                          {experience.duration}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <IconButton
+                      aria-label={expanded[index] ? "collapse" : "expand"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpanded(index);
+                      }}
+                      size="small"
+                      sx={{ alignSelf: "center", mt: '2px' }}
                     >
-                      {experience.duration}
-                    </Typography>
+                      {expanded[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </IconButton>
                   </Box>
-                  <Box component="ul" className="workexp-list">
-                    {experience.details
-                      .slice(0, expanded[index] ? experience.details.length : 2)
-                      .map((detail, idx) => (
+
+                  {expanded[index] && (
+                    <Box component="ul" className="workexp-list" sx={{ mt: 1 }}>
+                      {experience.details.map((detail, idx) => (
                         <li key={idx}>
                           <Typography variant="body2">{detail}</Typography>
                         </li>
                       ))}
-                  </Box>
-                  {experience.details.length > 2 && (
-                    <Button
-                      onClick={() => toggleExpanded(index)}
-                      className="workexp-toggle-btn"
-                      size="small"
-                      endIcon={
-                        expanded[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />
-                      }
-                    >
-                      {expanded[index] ? "Show Less" : "Show More"}
-                    </Button>
+                    </Box>
                   )}
+
                   <Typography
                     variant="body2"
                     color="textSecondary"
                     className="workexp-tech"
+                    sx={{ mt: 1.5 }}
                   >
                     <strong>Tech Stack:</strong> {experience.techStack}
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </div>
           ))}
         </Grid>
       </Container>
